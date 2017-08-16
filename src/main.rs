@@ -72,6 +72,13 @@ fn make_relative(path: &Path, current_dir: &Path) -> PathBuf {
 fn repo_ops(repo: &Repository, current_dir: &Path) {
     if let Some(path) = repo.workdir() {
         let path = make_relative(path, current_dir);
-        println!("{}", path.display());
+        print!("{}", path.display());
+        match repo.statuses(None) {
+            Ok(statuses) => if !statuses.is_empty() {
+                print!(" ({} changes)", statuses.len());
+            },
+            Err(why) => println!("{}", why),
+        }
+        println!();
     }
 }

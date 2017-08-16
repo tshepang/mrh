@@ -4,7 +4,8 @@ This tool crawls children directories for git repos,
 and pokes them for various bits of info.
 
 **This is very unfinished**,
-and only displays paths of git repos;
+and only displays paths of git repos,
+as well as a count of uncommited changes;
 the following are just future plans:
 
 Show all repos:
