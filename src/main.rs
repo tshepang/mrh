@@ -73,7 +73,8 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
     if let Some(path) = repo.workdir() {
         let path = make_relative(path, current_dir);
         print!("{}", path.display());
-        match repo.statuses(None) {
+        let mut opts = git2::StatusOptions::new();
+        match repo.statuses(Some(opts.include_ignored(false))) {
             Ok(statuses) => if !statuses.is_empty() {
                 print!(" ({} changes)", statuses.len());
             },
