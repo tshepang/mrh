@@ -28,9 +28,6 @@ Show all repos that have unpushed commits:
 
     mrh unpushed
 
-Jump to repo:
-
-    mrh cd <repo name>
 
 ## notes
 
