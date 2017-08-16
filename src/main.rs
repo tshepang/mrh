@@ -74,7 +74,8 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
         let path = make_relative(path, current_dir);
         print!("{}", path.display());
         let mut opts = git2::StatusOptions::new();
-        match repo.statuses(Some(opts.include_ignored(false))) {
+        opts.include_ignored(false).include_untracked(true);
+        match repo.statuses(Some(&mut opts)) {
             Ok(statuses) => if !statuses.is_empty() {
                 print!(" ({} changes)", statuses.len());
             },
