@@ -18,6 +18,9 @@ Show all repos that have uncommitted changes:
 
     mrh --changed
 
+
+## TODO
+
 Maybe in future we'll have more informative output:
 
     $ mrh
@@ -25,7 +28,18 @@ Maybe in future we'll have more informative output:
     bar untagged (uncommitted changes, unpushed commits)
     baz v3.0.0
 
+
 ## notes
 
 - Ignores unreadable files/directories without warning
 - Ignores bare git repositories
+
+
+## installation
+
+Following is the most easy way to install the tool
+(assuming you have the [Rust toolchain installed][install]):
+
+    cargo install --git https://github.com/tshepang/mrh
+
+[install]: https://www.rust-lang.org/en-US/install.html
