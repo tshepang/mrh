@@ -1,5 +1,7 @@
 extern crate git2;
 extern crate walkdir;
+extern crate structopt;
+#[macro_use] extern crate structopt_derive;
 
 use std::path::{self, Path, PathBuf};
 use std::env;
@@ -7,6 +9,16 @@ use std::process;
 
 use walkdir::{DirEntry, WalkDir, WalkDirIterator};
 use git2::Repository;
+use structopt::StructOpt;
+
+#[derive(StructOpt)]
+struct Opt {
+    #[structopt(
+        long = "changed",
+        help = "Only show repos with uncommited changes",
+    )]
+    changed: bool,
+}
 
 fn main() {
     fn valid(entry: &DirEntry) -> bool {
@@ -70,17 +82,20 @@ fn make_relative(path: &Path, current_dir: &Path) -> PathBuf {
 }
 
 fn repo_ops(repo: &Repository, current_dir: &Path) {
+    let cli = Opt::from_args();
     if let Some(path) = repo.workdir() {
         let path = make_relative(path, current_dir);
-        print!("{}", path.display());
         let mut opts = git2::StatusOptions::new();
         opts.include_ignored(false).include_untracked(true);
         match repo.statuses(Some(&mut opts)) {
-            Ok(statuses) => if !statuses.is_empty() {
-                print!(" ({} changes)", statuses.len());
+            Ok(statuses) => {
+                if !statuses.is_empty() {
+                    println!("{} ({} changes)", path.display(), statuses.len());
+                } else if !cli.changed {
+                    println!("{}", path.display());
+                }
             },
             Err(why) => println!("{}", why),
         }
-        println!();
     }
 }

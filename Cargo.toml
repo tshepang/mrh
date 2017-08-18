@@ -5,4 +5,6 @@ version = "0.1.0"
 
 [dependencies]
 git2 = "0.6"
+structopt = "0.1"
+structopt-derive = "0.1"
 walkdir = "1.0"
