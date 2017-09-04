@@ -115,7 +115,10 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                     println!("{}", path.display());
                 }
             }
-            Err(why) => println!("{}", why),
+            Err(why) => {
+                println!("{}", why);
+                process::exit(1);
+            }
         }
     }
 }
