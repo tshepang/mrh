@@ -1,5 +1,7 @@
 # mrh - multiple git repo helper
 
+[![Linux build status](https://travis-ci.org/tshepang/mrh.svg?branch=master)](https://travis-ci.org/tshepang/mrh)
+
 This tool crawls current and children directories for git repos,
 and checks if there are changes that are not committed, or pushed.
 
