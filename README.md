@@ -1,7 +1,7 @@
 # mrh - multiple git repo helper
 
 This tool crawls current and children directories for git repos,
-and check if there are changes that are not committed, or pushed.
+and checks if there are changes that are not committed, or pushed.
 
 Show all repos:
 
