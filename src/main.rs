@@ -89,12 +89,32 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
         opts.include_ignored(false).include_untracked(true);
         match repo.statuses(Some(&mut opts)) {
             Ok(statuses) => {
+                let local_ref = match repo.head() {
+                    Ok(head) => head,
+                    Err(why) => {
+                        println!("{}", why);
+                        process::exit(1);
+                    }
+                };
+                let mut changes = Vec::new();
                 if !statuses.is_empty() {
-                    println!("{} ({} changes)", path.display(), statuses.len());
+                    changes.push(format!("{} changes", statuses.len()));
+                }
+                let branch = git2::Branch::wrap(local_ref);
+                if let Ok(upstream_branch) = branch.upstream() {
+                    let remote_ref = upstream_branch.into_reference();
+                    let local_oid = branch.get().target().unwrap();
+                    let remote_oid = remote_ref.target().unwrap();
+                    if local_oid != remote_oid {
+                        changes.push("unpushed commits".into());
+                    };
+                }
+                if !changes.is_empty() {
+                    println!("{} ({})", path.display(), changes.join(", "));
                 } else if !cli.changed {
                     println!("{}", path.display());
                 }
-            },
+            }
             Err(why) => println!("{}", why),
         }
     }
