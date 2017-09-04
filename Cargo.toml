@@ -1,10 +1,18 @@
 [package]
-authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
 name = "mrh"
 version = "0.1.0"
+description = "Crawl filesystem and display pending status of each git repo found"
+repository = "https://github.com/tshepang/mrh"
+license = "MIT"
+readme = "README.md"
+categories = ["command-line-utilities"]
+authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
 
 [dependencies]
 git2 = "0.6"
 structopt = "0.1"
 structopt-derive = "0.1"
 walkdir = "1.0"
+
+[badges]
+travis-ci = { repository = "tshepang/mrh" }
