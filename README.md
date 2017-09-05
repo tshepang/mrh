@@ -8,7 +8,7 @@ and checks if there are changes that are not committed, or pushed.
 Show all repos:
 
     $ mrh
-    foo (2 changes, unpushed changes)
+    foo (2 changes, unpushed commits)
     bar
     baz (1 changes)
     qux
@@ -16,7 +16,7 @@ Show all repos:
 Show all repos that have uncommitted and/or unpushed changes:
 
     $ mrh --changed
-    foo (2 changes, unpushed changes)
+    foo (2 changes, unpushed commits)
     baz (1 changes)
 
 
