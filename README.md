@@ -31,6 +31,7 @@ Show all repos that have uncommitted and/or unpushed changes:
 Following is the most easy way to install the tool
 (assuming you have the [Rust toolchain installed][install]):
 
-    cargo install --git https://github.com/tshepang/mrh
+    cargo install mrh
+
 
 [install]: https://www.rust-lang.org/en-US/install.html
