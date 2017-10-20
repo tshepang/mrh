@@ -1,7 +1,7 @@
 [package]
 name = "mrh"
 version = "0.1.1"
-description = "Crawl filesystem and display pending status of each git repo found"
+description = "Crawls filesystem and displays pending status of each git repo found"
 repository = "https://github.com/tshepang/mrh"
 license = "MIT"
 readme = "README.md"
