@@ -33,7 +33,7 @@ fn main() {
         Ok(path) => path,
         Err(why) => {
             println!("{}", why);
-            process::exit(1);
+            process::exit(1)
         }
     };
 
@@ -93,7 +93,7 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                     Ok(head) => head,
                     Err(why) => {
                         println!("{}", why);
-                        process::exit(1);
+                        process::exit(1)
                     }
                 };
                 let mut changes = Vec::new();
@@ -117,7 +117,7 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
             }
             Err(why) => {
                 println!("{}", why);
-                process::exit(1);
+                process::exit(1)
             }
         }
     }
