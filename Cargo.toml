@@ -6,6 +6,7 @@ repository = "https://github.com/tshepang/mrh"
 license = "MIT"
 readme = "README.md"
 categories = ["command-line-utilities"]
+keywords = ["git"]
 authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
 
 [dependencies]
