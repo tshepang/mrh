@@ -1,6 +1,6 @@
 [root]
 name = "mrh"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "git2 0.6.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
