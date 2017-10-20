@@ -106,8 +106,17 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                     let local_oid = branch.get().target().unwrap();
                     let remote_oid = remote_ref.target().unwrap();
                     if local_oid != remote_oid {
-                        changes.push("unpushed commits".into());
-                    };
+                        if let Ok((ahead, behind)) =
+                            repo.graph_ahead_behind(local_oid, remote_oid)
+                        {
+                            if ahead > 0 {
+                                changes.push("unpushed commits".into());
+                            }
+                            if behind > 0 {
+                                changes.push("unpulled commits".into());
+                            }
+                        }
+                    }
                 }
                 if !changes.is_empty() {
                     println!("{} ({})", path.display(), changes.join(", "));

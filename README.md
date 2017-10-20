@@ -3,21 +3,21 @@
 [![Linux build status](https://travis-ci.org/tshepang/mrh.svg?branch=master)](https://travis-ci.org/tshepang/mrh)
 
 This tool crawls current and children directories for git repos,
-and checks if there are changes that are not committed, or pushed.
+and checks if there are changes that are not committed, pushed, or pulled.
 
 Show all repos:
 
     $ mrh
     foo (2 changes, unpushed commits)
     bar
-    baz (1 changes)
+    baz (unpulled commits)
     qux
 
 Show all repos that have uncommitted and/or unpushed changes:
 
     $ mrh --changed
     foo (2 changes, unpushed commits)
-    baz (1 changes)
+    baz (unpulled commits)
 
 
 ## notes
