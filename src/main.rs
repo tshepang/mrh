@@ -7,7 +7,7 @@ use std::path::{self, Path, PathBuf};
 use std::env;
 use std::process;
 
-use walkdir::{DirEntry, WalkDir, WalkDirIterator};
+use walkdir::{DirEntry, WalkDir};
 use git2::Repository;
 use structopt::StructOpt;
 

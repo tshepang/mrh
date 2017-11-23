@@ -13,7 +13,7 @@ authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
 git2 = "0.6"
 structopt = "0.1"
 structopt-derive = "0.1"
-walkdir = "1.0"
+walkdir = "2"
 
 [badges]
 travis-ci = { repository = "tshepang/mrh" }
