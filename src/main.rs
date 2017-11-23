@@ -92,7 +92,10 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
     if let Some(path) = repo.workdir() {
         let path = make_relative(path, current_dir);
         let mut opts = git2::StatusOptions::new();
-        opts.include_ignored(false).include_untracked(true);
+        opts.include_ignored(false)
+            .include_untracked(true)
+            .renames_head_to_index(true)
+            .renames_index_to_workdir(true);
         match repo.statuses(Some(&mut opts)) {
             Ok(statuses) => {
                 let mut pending = Set::new();
@@ -103,10 +106,33 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                                 if !cli.ignore_untracked {
                                     pending.insert("untracked files");
                                 }
-                            },
+                            }
                             git2::Delta::Modified => {
                                 pending.insert("uncommitted changes");
-                            },
+                            }
+                            git2::Delta::Deleted => {
+                                pending.insert("deleted files");
+                            }
+                            git2::Delta::Renamed => {
+                                pending.insert("renamed files");
+                            }
+                            _ => (),
+                        }
+                    }
+                    if let Some(diff_delta) = status.head_to_index() {
+                        match diff_delta.status() {
+                            git2::Delta::Added => {
+                                pending.insert("added files");
+                            }
+                            git2::Delta::Modified => {
+                                pending.insert("uncommitted changes");
+                            }
+                            git2::Delta::Deleted => {
+                                pending.insert("deleted files");
+                            }
+                            git2::Delta::Renamed => {
+                                pending.insert("renamed files");
+                            }
                             _ => (),
                         }
                     };

@@ -8,6 +8,9 @@ and checks if there are:
 - uncommitted changes
 - unpushed commits
 - unpulled commits
+- added files (git index)
+- deleted files
+- renamed files
 
 Show all repos:
 
