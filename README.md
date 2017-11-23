@@ -23,6 +23,11 @@ Only show those repos that are pending action:
     foo (untracked files, uncommitted changes, unpushed commits)
     baz (untracked files)
 
+Ignore untracked files in results:
+
+    $ mrh --pending --ignore-untracked
+    foo (uncommitted changes, unpushed commits)
+
 
 ## notes
 

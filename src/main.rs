@@ -19,6 +19,11 @@ struct Opt {
         help = "Only show repos with pending action",
     )]
     pending: bool,
+    #[structopt(
+        long = "ignore-untracked",
+        help = "Do not include untracked files in repos with pending action",
+    )]
+    ignore_untracked: bool,
 }
 
 fn main() {
@@ -94,8 +99,14 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                 for status in statuses.iter() {
                     if let Some(diff_delta) = status.index_to_workdir() {
                         match diff_delta.status() {
-                            git2::Delta::Untracked => { pending.insert("untracked files"); },
-                            git2::Delta::Modified => { pending.insert("uncommitted changes"); },
+                            git2::Delta::Untracked => {
+                                if !cli.ignore_untracked {
+                                    pending.insert("untracked files");
+                                }
+                            },
+                            git2::Delta::Modified => {
+                                pending.insert("uncommitted changes");
+                            },
                             _ => (),
                         }
                     };
