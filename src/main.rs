@@ -6,6 +6,7 @@ extern crate structopt;
 use std::path::{self, Path, PathBuf};
 use std::env;
 use std::process;
+use std::collections::HashSet as Set;
 
 use walkdir::{DirEntry, WalkDir};
 use git2::Repository;
@@ -14,10 +15,10 @@ use structopt::StructOpt;
 #[derive(StructOpt)]
 struct Opt {
     #[structopt(
-        long = "changed",
-        help = "Only show repos with uncommited changes",
+        long = "pending",
+        help = "Only show repos with pending action",
     )]
-    changed: bool,
+    pending: bool,
 }
 
 fn main() {
@@ -89,6 +90,16 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
         opts.include_ignored(false).include_untracked(true);
         match repo.statuses(Some(&mut opts)) {
             Ok(statuses) => {
+                let mut pending = Set::new();
+                for status in statuses.iter() {
+                    if let Some(diff_delta) = status.index_to_workdir() {
+                        match diff_delta.status() {
+                            git2::Delta::Untracked => { pending.insert("untracked files"); },
+                            git2::Delta::Modified => { pending.insert("uncommitted changes"); },
+                            _ => (),
+                        }
+                    };
+                }
                 let local_ref = match repo.head() {
                     Ok(head) => head,
                     Err(why) => {
@@ -96,10 +107,6 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                         process::exit(1)
                     }
                 };
-                let mut changes = Vec::new();
-                if !statuses.is_empty() {
-                    changes.push(format!("{} changes", statuses.len()));
-                }
                 let branch = git2::Branch::wrap(local_ref);
                 if let Ok(upstream_branch) = branch.upstream() {
                     let remote_ref = upstream_branch.into_reference();
@@ -110,17 +117,19 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                             repo.graph_ahead_behind(local_oid, remote_oid)
                         {
                             if ahead > 0 {
-                                changes.push("unpushed commits".into());
+                                pending.insert("unpushed commits");
                             }
                             if behind > 0 {
-                                changes.push("unpulled commits".into());
+                                pending.insert("unpulled commits");
                             }
                         }
                     }
                 }
-                if !changes.is_empty() {
-                    println!("{} ({})", path.display(), changes.join(", "));
-                } else if !cli.changed {
+                if !pending.is_empty() {
+                    // HashSet, for some reason, does not have join()
+                    let pending: Vec<_> = pending.into_iter().collect();
+                    println!("{} ({})", path.display(), pending.join(", "));
+                } else if !cli.pending {
                     println!("{}", path.display());
                 }
             }
