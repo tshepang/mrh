@@ -140,8 +140,8 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                 let local_ref = match repo.head() {
                     Ok(head) => head,
                     Err(why) => {
-                        println!("{}", why);
-                        process::exit(1)
+                        println!("{} (error: {})", path.display(), why);
+                        return;
                     }
                 };
                 let branch = git2::Branch::wrap(local_ref);
@@ -171,8 +171,7 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                 }
             }
             Err(why) => {
-                println!("{}", why);
-                process::exit(1)
+                println!("{} (error: {})", path.display(), why);
             }
         }
     }
