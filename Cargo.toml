@@ -1,6 +1,6 @@
 [package]
 name = "mrh"
-version = "0.3.0"
+version = "0.3.1"
 description = "Crawls filesystem and displays pending status of each git repo found"
 repository = "https://github.com/tshepang/mrh"
 license = "MIT"
