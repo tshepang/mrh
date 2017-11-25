@@ -1,12 +1,14 @@
 extern crate git2;
 extern crate walkdir;
 extern crate structopt;
+extern crate colored;
 #[macro_use] extern crate structopt_derive;
 
 use std::path::{self, Path, PathBuf};
 use std::env;
 use std::process;
 use std::collections::HashSet as Set;
+use colored::Colorize;
 
 use walkdir::{DirEntry, WalkDir};
 use git2::Repository;
@@ -38,7 +40,11 @@ fn main() {
     let current_dir = match env::current_dir() {
         Ok(path) => path,
         Err(why) => {
-            println!("{}", why);
+            println!(
+                "{}: {}",
+                "error".bright_red(),
+                why.to_string().bright_black()
+            );
             process::exit(1)
         }
     };
@@ -140,7 +146,12 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                 let local_ref = match repo.head() {
                     Ok(head) => head,
                     Err(why) => {
-                        println!("{} (error: {})", path.display(), why);
+                        println!(
+                            "{} ({}: {})",
+                            path.display(),
+                            "error".bright_red(),
+                            why.to_string().bright_black()
+                        );
                         return;
                     }
                 };
@@ -165,13 +176,19 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                 if !pending.is_empty() {
                     // HashSet, for some reason, does not have join()
                     let pending: Vec<_> = pending.into_iter().collect();
-                    println!("{} ({})", path.display(), pending.join(", "));
+                    println!("{} ({})", path.display(), pending.join(", ").cyan());
                 } else if !cli.pending {
                     println!("{}", path.display());
                 }
             }
+
             Err(why) => {
-                println!("{} (error: {})", path.display(), why);
+                println!(
+                    "{} ({}: {})",
+                    path.display(),
+                    "error".bright_red(),
+                    why.to_string().bright_black()
+                );
             }
         }
     }
