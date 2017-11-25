@@ -26,6 +26,11 @@ struct Opt {
         help = "Do not include untracked files in repos with pending action",
     )]
     ignore_untracked: bool,
+    #[structopt(
+        long = "absolute-paths",
+        help = "Display absolute paths for repos",
+    )]
+    absolute_paths: bool,
 }
 
 fn main() {
@@ -96,7 +101,10 @@ fn make_relative(path: &Path, current_dir: &Path) -> PathBuf {
 fn repo_ops(repo: &Repository, current_dir: &Path) {
     let cli = Opt::from_args();
     if let Some(path) = repo.workdir() {
-        let path = make_relative(path, current_dir);
+        let mut path = path.to_path_buf();
+        if !cli.absolute_paths {
+            path = make_relative(&path, current_dir);
+        }
         let mut opts = git2::StatusOptions::new();
         opts.include_ignored(false)
             .include_untracked(true)
