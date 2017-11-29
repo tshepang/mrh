@@ -31,6 +31,11 @@ struct Opt {
         help = "Display absolute paths for repos",
     )]
     absolute_paths: bool,
+    #[structopt(
+        long = "untagged-head",
+        help = "Check if HEAD is untagged",
+    )]
+    untagged_head: bool,
 }
 
 fn main() {
@@ -163,6 +168,25 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                         return;
                     }
                 };
+                if cli.untagged_head {
+                    if let Ok(tags) = repo.tag_names(None) {
+                        let mut untagged = true;
+                        for tag in tags.iter() {
+                            if let Some(tag) = tag {
+                                let tag = format!("refs/tags/{}", tag);
+                                if let Ok(reference) = repo.find_reference(&tag) {
+                                    if reference == local_ref {
+                                        untagged = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if untagged {
+                            pending.insert("untagged HEAD");
+                        }
+                    }
+                }
                 let branch = git2::Branch::wrap(local_ref);
                 if let Ok(upstream_branch) = branch.upstream() {
                     let remote_ref = upstream_branch.into_reference();

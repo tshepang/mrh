@@ -11,6 +11,7 @@ and checks if there are:
 - added files (git index)
 - deleted files
 - renamed files
+- untagged HEAD (via an optional flag)
 
 Show all repos:
 
@@ -30,6 +31,12 @@ Ignore untracked files in results:
 
     $ mrh --pending --ignore-untracked
     foo (uncommitted changes, unpushed commits)
+
+Include repos whose HEAD commits are not tagged:
+
+    $ mrh --pending --ignore-untracked --untagged-head
+    foo (uncommitted changes, unpushed commits, untagged HEAD)
+    bar (untagged HEAD)
 
 
 ## notes
