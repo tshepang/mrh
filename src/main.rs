@@ -1,12 +1,10 @@
 extern crate git2;
 extern crate walkdir;
-extern crate structopt;
 extern crate colored;
+extern crate structopt;
 #[macro_use] extern crate structopt_derive;
 
 use std::path::{self, Path, PathBuf};
-use std::env;
-use std::process;
 use std::collections::HashSet as Set;
 use colored::Colorize;
 
@@ -39,15 +37,7 @@ struct Opt {
 }
 
 fn main() {
-    fn valid(entry: &DirEntry) -> bool {
-        entry
-            .file_name()
-            .to_str()
-            .map(|string| !string.starts_with(".git"))
-            .unwrap_or(false)
-    }
-
-    let current_dir = match env::current_dir() {
+    let current_dir = match std::env::current_dir() {
         Ok(path) => path,
         Err(why) => {
             println!(
@@ -55,14 +45,22 @@ fn main() {
                 "error".bright_red(),
                 why.to_string().bright_black()
             );
-            process::exit(1)
+            std::process::exit(1)
         }
     };
+
+    fn is_git_dir(entry: &DirEntry) -> bool {
+        entry
+            .file_name()
+            .to_str()
+            .map(|string| !string.starts_with(".git"))
+            .unwrap_or(false)
+    }
 
     for entry in WalkDir::new(".")
         .follow_links(true)
         .into_iter()
-        .filter_entry(|entry| valid(entry))
+        .filter_entry(|entry| is_git_dir(entry))
         .filter_map(|entry| entry.ok()) // ignore stuff we can't read
         .filter(|entry| entry.file_type().is_dir()) // ignore non-dirs
     {
@@ -163,7 +161,7 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                             "{} ({}: {})",
                             path.display(),
                             "error".bright_red(),
-                            why.to_string().bright_black()
+                            why.to_string().bright_black(),
                         );
                         return;
                     }
@@ -219,7 +217,7 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                     "{} ({}: {})",
                     path.display(),
                     "error".bright_red(),
-                    why.to_string().bright_black()
+                    why.to_string().bright_black(),
                 );
             }
         }
