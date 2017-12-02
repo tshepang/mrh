@@ -4,7 +4,7 @@ extern crate colored;
 extern crate structopt;
 #[macro_use] extern crate structopt_derive;
 
-use std::path::{self, Path, PathBuf};
+use std::path::{Path, PathBuf};
 use std::collections::HashSet as Set;
 use colored::Colorize;
 
@@ -81,10 +81,6 @@ fn make_relative(path: &Path, current_dir: &Path) -> PathBuf {
     let mut path_before_current_dir = PathBuf::new();
     let mut after_current_dir = false;
     for component in path.components() {
-        if component == path::Component::RootDir {
-            path_before_current_dir.push(component.as_os_str());
-            continue;
-        }
         if after_current_dir {
             result.push(component.as_os_str());
         } else {
