@@ -14,7 +14,7 @@ git2 = "0.6"
 structopt = "0.1"
 structopt-derive = "0.1"
 walkdir = "2"
-colored = "1"
+ansi_term = "0.10"
 
 [badges]
 travis-ci = { repository = "tshepang/mrh" }

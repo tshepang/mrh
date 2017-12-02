@@ -1,16 +1,20 @@
 extern crate git2;
 extern crate walkdir;
-extern crate colored;
+extern crate ansi_term;
 extern crate structopt;
 #[macro_use] extern crate structopt_derive;
 
 use std::path::{Path, PathBuf};
 use std::collections::HashSet as Set;
-use colored::Colorize;
 
 use walkdir::{DirEntry, WalkDir};
 use git2::Repository;
 use structopt::StructOpt;
+use ansi_term::Color;
+
+const CYAN: Color = Color::Fixed(6);
+const BRIGHT_BLACK: Color = Color::Fixed(8);
+const BRIGHT_RED: Color = Color::Fixed(9);
 
 #[derive(StructOpt)]
 struct Opt {
@@ -42,8 +46,8 @@ fn main() {
         Err(why) => {
             println!(
                 "{}: {}",
-                "error".bright_red(),
-                why.to_string().bright_black()
+                BRIGHT_RED.paint("error"),
+                BRIGHT_BLACK.paint(why.to_string()),
             );
             std::process::exit(1)
         }
@@ -154,8 +158,8 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                         println!(
                             "{} ({}: {})",
                             path.display(),
-                            "error".bright_red(),
-                            why.to_string().bright_black(),
+                            BRIGHT_RED.paint("error"),
+                            BRIGHT_BLACK.paint(why.to_string()),
                         );
                         return;
                     }
@@ -200,7 +204,7 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                 if !pending.is_empty() {
                     // HashSet, for some reason, does not have join()
                     let pending: Vec<_> = pending.into_iter().collect();
-                    println!("{} ({})", path.display(), pending.join(", ").cyan());
+                    println!("{} ({})", path.display(), CYAN.paint(pending.join(", ")));
                 } else if !cli.pending {
                     println!("{}", path.display());
                 }
@@ -210,8 +214,8 @@ fn repo_ops(repo: &Repository, current_dir: &Path) {
                 println!(
                     "{} ({}: {})",
                     path.display(),
-                    "error".bright_red(),
-                    why.to_string().bright_black(),
+                    CYAN.paint("error"),
+                    BRIGHT_BLACK.paint(why.to_string()),
                 );
             }
         }
