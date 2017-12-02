@@ -72,7 +72,6 @@ fn main() {
     }
 }
 
-// XXX This will break if current_dir is RootDir
 fn make_relative(path: &Path, current_dir: &Path) -> PathBuf {
     if path.is_relative() {
         return path.into();
