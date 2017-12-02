@@ -67,7 +67,6 @@ fn main() {
         .filter_map(|entry| entry.ok()) // ignore stuff we can't read
         .filter(|entry| entry.file_type().is_dir()) // ignore non-dirs
     {
-        // XXX Does not handle symlinks proper
         let path = entry.path();
         if let Ok(repo) = Repository::open(path) {
             repo_ops(&repo, &current_dir);
