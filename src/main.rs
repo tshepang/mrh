@@ -58,7 +58,6 @@ fn main() {
     }
 
     for entry in WalkDir::new(".")
-        .follow_links(true)
         .into_iter()
         .filter_entry(|entry| is_git_dir(entry))
         .filter_map(|entry| entry.ok()) // ignore stuff we can't read
