@@ -75,26 +75,14 @@ fn main() {
 }
 
 fn make_relative(target_dir: &Path, current_dir: &Path) -> PathBuf {
-    if target_dir.is_relative() {
-        return target_dir.into();
-    }
-    let mut result = PathBuf::new();
-    let mut path_before_current_dir = PathBuf::new();
-    let mut after_current_dir = false;
-    for component in target_dir.components() {
-        if after_current_dir {
-            result.push(component.as_os_str());
+    if let Ok(path) = target_dir.strip_prefix(current_dir) {
+        if path.to_string_lossy().is_empty() {
+            ".".into()
         } else {
-            path_before_current_dir.push(component.as_os_str());
+            path.into()
         }
-        if path_before_current_dir == current_dir {
-            after_current_dir = true;
-        }
-    }
-    if result.to_string_lossy().is_empty() {
-        ".".into()
     } else {
-        result
+        target_dir.into()
     }
 }
 
