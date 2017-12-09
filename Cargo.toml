@@ -15,6 +15,7 @@ structopt = "0.1"
 structopt-derive = "0.1"
 walkdir = "2"
 ansi_term = "0.10"
+ordermap = "0.3"
 
 [badges]
 travis-ci = { repository = "tshepang/mrh" }

@@ -1,12 +1,13 @@
 extern crate git2;
 extern crate walkdir;
 extern crate ansi_term;
+extern crate ordermap;
 extern crate structopt;
 #[macro_use] extern crate structopt_derive;
 
 use std::path::{Path, PathBuf};
-use std::collections::HashSet as Set;
 
+use ordermap::set::OrderSet as Set;
 use walkdir::{DirEntry, WalkDir};
 use git2::Repository;
 use structopt::StructOpt;
