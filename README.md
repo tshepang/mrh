@@ -39,13 +39,13 @@ Include repos whose HEAD commits are not tagged:
     bar (untagged HEAD)
 
 
-## notes
+## Notes
 
 - Ignores unreadable files/directories without warning
 - Ignores bare git repositories
 
 
-## installation
+## Installation
 
 Following is the most easy way to install the tool
 (assuming you have the [Rust toolchain installed][install]):
@@ -55,7 +55,6 @@ Following is the most easy way to install the tool
 
 [install]: https://www.rust-lang.org/en-US/install.html
 
----
 
 ## License
 
