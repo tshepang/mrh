@@ -71,7 +71,7 @@ impl<'a> Crawler<'a> {
         {
             let path = entry.path();
             if let Ok(repo) = Repository::open(path) {
-                if let Some(output) = self.repo_ops(&repo, self.root_path) {
+                if let Some(output) = self.repo_ops(&repo) {
                     results.push(output);
                 }
             }
@@ -79,11 +79,11 @@ impl<'a> Crawler<'a> {
         results
     }
 
-    fn repo_ops(&self, repo: &Repository, current_dir: &Path) -> Option<Output> {
+    fn repo_ops(&self, repo: &Repository) -> Option<Output> {
         if let Some(path) = repo.workdir() {
             let mut path = path.to_path_buf();
             if !self.absolute_paths {
-                path = make_relative(&path, current_dir);
+                path = self.make_relative(&path);
             }
             let mut opts = StatusOptions::new();
             opts.include_ignored(false)
@@ -206,16 +206,16 @@ impl<'a> Crawler<'a> {
             None
         }
     }
-}
 
-fn make_relative(target_dir: &Path, current_dir: &Path) -> PathBuf {
-    if let Ok(path) = target_dir.strip_prefix(current_dir) {
-        if path.to_string_lossy().is_empty() {
-            ".".into()
+    fn make_relative(&self, target_dir: &Path) -> PathBuf {
+        if let Ok(path) = target_dir.strip_prefix(self.root_path) {
+            if path.to_string_lossy().is_empty() {
+                ".".into()
+            } else {
+                path.into()
+            }
         } else {
-            path.into()
+            target_dir.into()
         }
-    } else {
-        target_dir.into()
     }
 }
