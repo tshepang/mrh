@@ -3,6 +3,7 @@ name = "mrh"
 version = "0.5.0"
 description = "Crawls filesystem and displays pending status of each git repo found"
 repository = "https://github.com/tshepang/mrh"
+documentation = "https://docs.rs/mrh"
 license = "MIT/Apache-2.0"
 readme = "README.md"
 categories = ["command-line-utilities"]
