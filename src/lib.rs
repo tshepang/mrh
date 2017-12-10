@@ -20,7 +20,7 @@ pub struct Crawler {
     ignore_untracked: bool,
     absolute_paths: bool,
     untagged_heads: bool,
-    starting_path: PathBuf,
+    root_path: PathBuf,
 }
 
 impl Crawler {
@@ -30,7 +30,7 @@ impl Crawler {
             ignore_untracked: false,
             absolute_paths: false,
             untagged_heads: false,
-            starting_path: path,
+            root_path: path,
         }
     }
 
@@ -64,7 +64,7 @@ impl Crawler {
         }
 
         let mut results = Vec::new();
-        for entry in WalkDir::new(&self.starting_path)
+        for entry in WalkDir::new(&self.root_path)
             .into_iter()
             .filter_entry(|entry| is_git_dir(entry))
             .filter_map(|entry| entry.ok()) // ignore stuff we can't read
@@ -72,7 +72,7 @@ impl Crawler {
         {
             let path = entry.path();
             if let Ok(repo) = Repository::open(path) {
-                if let Some(output) = self.repo_ops(&repo, self.starting_path.as_path()) {
+                if let Some(output) = self.repo_ops(&repo, self.root_path.as_path()) {
                     results.push(output);
                 }
             }
