@@ -1,3 +1,20 @@
+//! A Git repo can be in a number of states where some pending actions may
+//! need to be taken:
+//!
+//! - uncommitted changes
+//! - untracked files (can be disabled flag)
+//! - unpushed commits
+//! - unpulled commits
+//! - added files
+//! - deleted files
+//! - renamed files
+//! - untagged HEAD (optional)
+//!
+//! This library is meant to inspect those states, given a root path as
+//! starting point.
+//!
+//! For a usage example, see `main.rs`, which is the command-line tool
+//! exercising the library.
 extern crate git2;
 extern crate walkdir;
 extern crate ordermap;
@@ -8,12 +25,21 @@ use ordermap::set::OrderSet as Set;
 use walkdir::{DirEntry, WalkDir};
 use git2::{Repository, StatusOptions, Delta, Branch, Error};
 
+/// Represents Crawler output. There are 3 possible scenarios:
+///
+/// - There are no pending states, so only `path` (to the repo) has a
+///   value
+/// - There are no pending states, and there is some error preventing the
+///   repo to be inspected properly... the `path` and `error` variant will
+///   have values
+/// - There are pending states... `path` and `pending` will have values
 pub struct Output<'a> {
     pub path: Option<PathBuf>,
     pub pending: Option<Set<&'a str>>,
     pub error: Option<Error>,
 }
 
+/// Crawls the filesystem, given a starting point, looking for Git repos.
 pub struct Crawler<'a> {
     pending: bool,
     ignore_untracked: bool,
@@ -23,6 +49,7 @@ pub struct Crawler<'a> {
 }
 
 impl<'a> Crawler<'a> {
+    /// `path` is where crawling for Git repos begin, the starting point
     pub fn new(path: &'a Path) -> Self {
         Crawler {
             pending: false,
@@ -33,26 +60,34 @@ impl<'a> Crawler<'a> {
         }
     }
 
+    /// Decide if you only want matches that are in pending state
     pub fn pending(mut self, answer: bool) -> Self {
         self.pending = answer;
         self
     }
 
+    /// Decide if you want to exclude matches that have untracked files
     pub fn ignore_untracked(mut self, answer: bool) -> Self {
         self.ignore_untracked = answer;
         self
     }
 
+    /// Display absolute paths (instead of relative ones)
     pub fn absolute_paths(mut self, answer: bool) -> Self {
         self.absolute_paths = answer;
         self
     }
 
+    /// Decide if you want matches whose HEADS are not tagged
+    ///
+    /// A use-case is where related repositories (e.g. those comprising
+    /// a single system), need to be tagged before, say, a release
     pub fn untagged_heads(mut self, answer: bool) -> Self {
         self.untagged_heads = answer;
         self
     }
 
+    /// Run the crawler
     pub fn run(&self) -> Vec<Output> {
         fn is_git_dir(entry: &DirEntry) -> bool {
             entry

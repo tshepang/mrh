@@ -2,21 +2,24 @@
 
 [![Linux build status](https://travis-ci.org/tshepang/mrh.svg?branch=master)](https://travis-ci.org/tshepang/mrh)
 
-This tool crawls current and children directories for git repos,
-and checks if there are:
-- untracked files
+This repo provides a library that allows crawling a directory and its
+children for Git repos.
+It reports if those repos have:
+
 - uncommitted changes
+- untracked files (can be disabled)
 - unpushed commits
 - unpulled commits
-- added files (git index)
+- added files
 - deleted files
 - renamed files
-- untagged HEAD (via an optional flag)
+- untagged HEAD (optional)
 
-Show all repos:
+I also offers a command line tool with all those features,
+one of which is to show all repos:
 
     $ mrh
-    foo (untracked files, uncommitted changes, unpushed commits)
+    foo (uncommitted changes, untracked files, unpushed commits)
     bar
     baz (untracked files)
     qux
@@ -24,7 +27,7 @@ Show all repos:
 Only show those repos that are pending action:
 
     $ mrh --pending
-    foo (untracked files, uncommitted changes, unpushed commits)
+    foo (uncommitted changes, untracked files, unpushed commits)
     baz (untracked files)
 
 Ignore untracked files in results:
@@ -52,8 +55,10 @@ Following is the most easy way to install the tool
 
     cargo install mrh
 
+For library usage, check them [API docs][docs].
 
 [install]: https://www.rust-lang.org/en-US/install.html
+[docs]: https://docs.rs/crate/mrh
 
 
 ## License
