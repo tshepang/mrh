@@ -37,31 +37,8 @@ struct Opt {
 
 fn main() {
     let cli = Opt::from_args();
-    let crawler = Crawler::new()
-        .pending(cli.pending)
-        .ignore_untracked(cli.ignore_untracked)
-        .absolute_paths(cli.absolute_paths)
-        .untagged_heads(cli.untagged_heads);
-    match crawler.run() {
-        Ok(results) => {
-            for result in results {
-                if let Some(path) = result.path {
-                    print!("{}", path.display());
-                }
-                if let Some(pending) = result.pending {
-                    let pending: Vec<_> = pending.into_iter().collect();
-                    print!(" ({})", CYAN.paint(pending.join(", ")));
-                }
-                if let Some(error) = result.error {
-                    print!(
-                        " ({}: {})",
-                        BRIGHT_RED.paint("error"),
-                        BRIGHT_BLACK.paint(error.to_string()),
-                    );
-                }
-                println!();
-            }
-        }
+    let current_dir = match std::env::current_dir() {
+        Ok(dir) => dir,
         Err(why) => {
             println!(
                 "{}: Could not read current directory: {}",
@@ -70,5 +47,27 @@ fn main() {
             );
             std::process::exit(1)
         }
+    };
+    let crawler = Crawler::new(current_dir)
+        .pending(cli.pending)
+        .ignore_untracked(cli.ignore_untracked)
+        .absolute_paths(cli.absolute_paths)
+        .untagged_heads(cli.untagged_heads);
+    for result in crawler.run() {
+        if let Some(path) = result.path {
+            print!("{}", path.display());
+        }
+        if let Some(pending) = result.pending {
+            let pending: Vec<_> = pending.into_iter().collect();
+            print!(" ({})", CYAN.paint(pending.join(", ")));
+        }
+        if let Some(error) = result.error {
+            print!(
+                " ({}: {})",
+                BRIGHT_RED.paint("error"),
+                BRIGHT_BLACK.paint(error.to_string()),
+            );
+        }
+        println!();
     }
 }

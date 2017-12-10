@@ -3,7 +3,6 @@ extern crate walkdir;
 extern crate ordermap;
 
 use std::path::{Path, PathBuf};
-use std::{env, io};
 
 use ordermap::set::OrderSet as Set;
 use walkdir::{DirEntry, WalkDir};
@@ -21,15 +20,17 @@ pub struct Crawler {
     ignore_untracked: bool,
     absolute_paths: bool,
     untagged_heads: bool,
+    starting_path: PathBuf,
 }
 
 impl Crawler {
-    pub fn new() -> Self {
+    pub fn new(path: PathBuf) -> Self {
         Crawler {
             pending: false,
             ignore_untracked: false,
             absolute_paths: false,
             untagged_heads: false,
+            starting_path: path,
         }
     }
 
@@ -53,9 +54,7 @@ impl Crawler {
         self
     }
 
-    pub fn run(&self) -> io::Result<Vec<Output>> {
-        let current_dir = env::current_dir()?;
-
+    pub fn run(&self) -> Vec<Output> {
         fn is_git_dir(entry: &DirEntry) -> bool {
             entry
                 .file_name()
@@ -65,7 +64,7 @@ impl Crawler {
         }
 
         let mut results = Vec::new();
-        for entry in WalkDir::new(".")
+        for entry in WalkDir::new(&self.starting_path)
             .into_iter()
             .filter_entry(|entry| is_git_dir(entry))
             .filter_map(|entry| entry.ok()) // ignore stuff we can't read
@@ -73,12 +72,12 @@ impl Crawler {
         {
             let path = entry.path();
             if let Ok(repo) = Repository::open(path) {
-                if let Some(output) = self.repo_ops(&repo, &current_dir) {
+                if let Some(output) = self.repo_ops(&repo, self.starting_path.as_path()) {
                     results.push(output);
                 }
             }
         }
-        Ok(results)
+        results
     }
 
     fn repo_ops(&self, repo: &Repository, current_dir: &Path) -> Option<Output> {
