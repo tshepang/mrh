@@ -14,17 +14,16 @@ pub struct Output<'a> {
     pub error: Option<Error>,
 }
 
-#[derive(Default)]
-pub struct Crawler {
+pub struct Crawler<'a> {
     pending: bool,
     ignore_untracked: bool,
     absolute_paths: bool,
     untagged_heads: bool,
-    root_path: PathBuf,
+    root_path: &'a Path,
 }
 
-impl Crawler {
-    pub fn new(path: PathBuf) -> Self {
+impl<'a> Crawler<'a> {
+    pub fn new(path: &'a Path) -> Self {
         Crawler {
             pending: false,
             ignore_untracked: false,
@@ -72,7 +71,7 @@ impl Crawler {
         {
             let path = entry.path();
             if let Ok(repo) = Repository::open(path) {
-                if let Some(output) = self.repo_ops(&repo, self.root_path.as_path()) {
+                if let Some(output) = self.repo_ops(&repo, self.root_path) {
                     results.push(output);
                 }
             }

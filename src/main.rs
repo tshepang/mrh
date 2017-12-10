@@ -48,7 +48,7 @@ fn main() {
             std::process::exit(1)
         }
     };
-    let crawler = Crawler::new(current_dir)
+    let crawler = Crawler::new(&current_dir)
         .pending(cli.pending)
         .ignore_untracked(cli.ignore_untracked)
         .absolute_paths(cli.absolute_paths)
