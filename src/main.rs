@@ -1,7 +1,8 @@
-extern crate mrh;
 extern crate ansi_term;
+extern crate mrh;
 extern crate structopt;
-#[macro_use] extern crate structopt_derive;
+#[macro_use]
+extern crate structopt_derive;
 
 use structopt::StructOpt;
 use ansi_term::Color;

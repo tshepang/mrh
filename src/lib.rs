@@ -16,14 +16,14 @@
 //! For a usage example, see `main.rs`, which is the command-line tool
 //! exercising the library.
 extern crate git2;
-extern crate walkdir;
 extern crate ordermap;
+extern crate walkdir;
 
 use std::path::{Path, PathBuf};
 
 use ordermap::set::OrderSet as Set;
 use walkdir::{DirEntry, WalkDir};
-use git2::{Repository, StatusOptions, Delta, Branch, Error};
+use git2::{Branch, Delta, Error, Repository, StatusOptions};
 
 /// Represents Crawler output. There are 3 possible scenarios:
 ///
@@ -229,13 +229,11 @@ impl<'a> Crawler<'a> {
                         None
                     }
                 }
-                Err(why) => {
-                    Some(Output {
-                        path: Some(path),
-                        pending: None,
-                        error: Some(why),
-                    })
-                }
+                Err(why) => Some(Output {
+                    path: Some(path),
+                    pending: None,
+                    error: Some(why),
+                }),
             }
         } else {
             None
