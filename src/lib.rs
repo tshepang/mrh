@@ -33,9 +33,9 @@ use git2::{Branch, Delta, Error, Repository, StatusOptions};
 ///   repo to be inspected properly... the `path` and `error` variant will
 ///   have values
 /// - There are pending states... `path` and `pending` will have values
-pub struct Output<'a> {
+pub struct Output {
     pub path: Option<PathBuf>,
-    pub pending: Option<Set<&'a str>>,
+    pub pending: Option<Set<&'static str>>, // <-- no need for lifetime, all static!
     pub error: Option<Error>,
 }
 
@@ -89,14 +89,6 @@ impl<'a> Crawler<'a> {
 
     /// Run the crawler
     pub fn run(&self) -> Vec<Output> {
-        fn is_git_dir(entry: &DirEntry) -> bool {
-            entry
-                .file_name()
-                .to_str()
-                .map(|string| !string.starts_with(".git"))
-                .unwrap_or(false)
-        }
-
         let mut results = Vec::new();
         for entry in WalkDir::new(&self.root_path)
             .into_iter()
@@ -112,6 +104,17 @@ impl<'a> Crawler<'a> {
             }
         }
         results
+    }
+
+    /// Return the results as an iterator
+    pub fn iter(&self) -> RepoIter {
+        // <-- code dup for cleanup
+        let iter = WalkDir::new(&self.root_path)
+            .into_iter()
+            .filter_entry(|entry| is_git_dir(entry))
+            .filter_map(|entry| entry.ok()) // ignore stuff we can't read
+            .filter(|entry| entry.file_type().is_dir()); // ignore non-dirs
+        RepoIter::new(self,iter)
     }
 
     fn repo_ops(&self, repo: &Repository) -> Option<Output> {
@@ -251,4 +254,51 @@ impl<'a> Crawler<'a> {
             target_dir.into()
         }
     }
+}
+
+// <-- crawler has a lifetime 'b (because of the &Path it contains)
+// and we borrow this with lifetime 'a.  Our borrowed lifetime must
+// be less or equal to the crawler lifetime.
+pub struct RepoIter<'a,'b> where 'b: 'a {
+    crawler: &'a Crawler<'b>,
+    iter: Box<Iterator<Item=DirEntry>>,
+}
+
+impl <'a,'b>RepoIter<'a,'b> {
+    fn new <I>(crawler: &'a Crawler<'b>, iter: I) -> RepoIter<'a,'b>
+    where I: Iterator<Item=DirEntry> + 'static {
+        // <--- the 'static was suggested by rustc
+        // it does work because the iterator didn't borrow anything!
+        RepoIter {crawler: crawler, iter: Box::new(iter)}
+    }
+}
+
+impl <'a,'b>Iterator for RepoIter<'a,'b> {
+    type Item = Output;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            match self.iter.next() {
+                None => return None, // all finished!
+                Some(entry) => {
+                    let path = entry.path();
+                    if let Ok(repo) = Repository::open(path) {
+                        if let Some(output) = self.crawler.repo_ops(&repo) {
+                            return Some(output);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+// <-- factored out
+fn is_git_dir(entry: &DirEntry) -> bool {
+    entry
+        .file_name()
+        .to_str()
+        .map(|string| !string.starts_with(".git"))
+        .unwrap_or(false)
 }
