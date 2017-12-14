@@ -94,7 +94,7 @@ impl<'a> Crawler<'a> {
             .filter_entry(|entry| is_git_dir(entry))
             .filter_map(|entry| entry.ok()) // ignore stuff we can't read
             .filter(|entry| entry.file_type().is_dir()); // ignore non-dirs
-        RepoIter::new(self,iter)
+        RepoIter::new(self, iter)
     }
 
     fn repo_ops(&self, repo: &Repository) -> Option<Output> {
@@ -236,19 +236,27 @@ impl<'a> Crawler<'a> {
     }
 }
 
-pub struct RepoIter<'a,'b> where 'b: 'a {
+pub struct RepoIter<'a, 'b>
+where
+    'b: 'a,
+{
     crawler: &'a Crawler<'b>,
-    iter: Box<Iterator<Item=DirEntry>>,
+    iter: Box<Iterator<Item = DirEntry>>,
 }
 
-impl <'a,'b>RepoIter<'a,'b> {
-    fn new <I>(crawler: &'a Crawler<'b>, iter: I) -> RepoIter<'a,'b>
-    where I: Iterator<Item=DirEntry> + 'static {
-        RepoIter {crawler: crawler, iter: Box::new(iter)}
+impl<'a, 'b> RepoIter<'a, 'b> {
+    fn new<I>(crawler: &'a Crawler<'b>, iter: I) -> RepoIter<'a, 'b>
+    where
+        I: Iterator<Item = DirEntry> + 'static,
+    {
+        RepoIter {
+            crawler: crawler,
+            iter: Box::new(iter),
+        }
     }
 }
 
-impl <'a,'b>Iterator for RepoIter<'a,'b> {
+impl<'a, 'b> Iterator for RepoIter<'a, 'b> {
     type Item = Output;
     fn next(&mut self) -> Option<Self::Item> {
         loop {
