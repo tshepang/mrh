@@ -1,4 +1,4 @@
-# mrh - multiple git repo helper
+# mrh - Multi-(git)Repo Helper
 
 [![Linux build status](https://travis-ci.org/tshepang/mrh.svg?branch=master)](https://travis-ci.org/tshepang/mrh)
 

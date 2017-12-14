@@ -1,3 +1,5 @@
+//! mrh - Multi-(git)Repo Helper
+//!
 //! A Git repo can be in a number of states where some pending actions may
 //! need to be taken:
 //!
@@ -25,7 +27,9 @@ use ordermap::set::OrderSet as Set;
 use walkdir::{DirEntry, WalkDir};
 use git2::{Branch, Delta, Error, Repository, StatusOptions};
 
-/// Represents Crawler output. There are 3 possible scenarios:
+/// Represents Crawler output
+///
+/// There are 3 possible scenarios:
 ///
 /// - There are no pending states, so only `path` (to the repo) has a
 ///   value
@@ -34,12 +38,15 @@ use git2::{Branch, Delta, Error, Repository, StatusOptions};
 ///   have values
 /// - There are pending states... `path` and `pending` will have values
 pub struct Output {
+    /// Repository path
     pub path: Option<PathBuf>,
+    /// A list of pending actions
     pub pending: Option<Set<&'static str>>,
+    /// Git-related error
     pub error: Option<Error>,
 }
 
-/// Crawls the filesystem, given a starting point, looking for Git repos.
+/// Crawls the filesystem, looking for Git repos
 pub struct Crawler<'a> {
     pending: bool,
     ignore_untracked: bool,
@@ -50,16 +57,16 @@ pub struct Crawler<'a> {
 }
 
 impl<'a> Crawler<'a> {
-    /// `path` is where crawling for Git repos begin, the starting point
-    pub fn new(path: &'a Path) -> Self {
+    /// `root` is where crawling for Git repos begin
+    pub fn new(root: &'a Path) -> Self {
         Crawler {
             pending: false,
             ignore_untracked: false,
             absolute_paths: false,
             untagged_heads: false,
-            root_path: path,
+            root_path: root,
             iter: Box::new(
-                WalkDir::new(path)
+                WalkDir::new(root)
                     .into_iter()
                     .filter_entry(|entry| is_git_dir(entry))
                     .filter_map(|entry| entry.ok()) // ignore stuff we can't read
