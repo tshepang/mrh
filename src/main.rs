@@ -54,7 +54,7 @@ fn main() {
         .ignore_untracked(cli.ignore_untracked)
         .absolute_paths(cli.absolute_paths)
         .untagged_heads(cli.untagged_heads);
-    for result in crawler.iter() {
+    for result in crawler {
         if let Some(path) = result.path {
             print!("{}", path.display());
         }

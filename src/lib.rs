@@ -46,6 +46,7 @@ pub struct Crawler<'a> {
     absolute_paths: bool,
     untagged_heads: bool,
     root_path: &'a Path,
+    iter: Box<Iterator<Item = DirEntry>>,
 }
 
 impl<'a> Crawler<'a> {
@@ -57,6 +58,13 @@ impl<'a> Crawler<'a> {
             absolute_paths: false,
             untagged_heads: false,
             root_path: path,
+            iter: Box::new(
+                WalkDir::new(path)
+                    .into_iter()
+                    .filter_entry(|entry| is_git_dir(entry))
+                    .filter_map(|entry| entry.ok()) // ignore stuff we can't read
+                    .filter(|entry| entry.file_type().is_dir()) // ignore non-dirs
+            ),
         }
     }
 
@@ -85,16 +93,6 @@ impl<'a> Crawler<'a> {
     pub fn untagged_heads(mut self, answer: bool) -> Self {
         self.untagged_heads = answer;
         self
-    }
-
-    /// Return the results as an iterator
-    pub fn iter(&self) -> RepoIter {
-        let iter = WalkDir::new(&self.root_path)
-            .into_iter()
-            .filter_entry(|entry| is_git_dir(entry))
-            .filter_map(|entry| entry.ok()) // ignore stuff we can't read
-            .filter(|entry| entry.file_type().is_dir()); // ignore non-dirs
-        RepoIter::new(self, iter)
     }
 
     fn repo_ops(&self, repo: &Repository) -> Option<Output> {
@@ -236,27 +234,7 @@ impl<'a> Crawler<'a> {
     }
 }
 
-pub struct RepoIter<'a, 'b>
-where
-    'b: 'a,
-{
-    crawler: &'a Crawler<'b>,
-    iter: Box<Iterator<Item = DirEntry>>,
-}
-
-impl<'a, 'b> RepoIter<'a, 'b> {
-    fn new<I>(crawler: &'a Crawler<'b>, iter: I) -> RepoIter<'a, 'b>
-    where
-        I: Iterator<Item = DirEntry> + 'static,
-    {
-        RepoIter {
-            crawler: crawler,
-            iter: Box::new(iter),
-        }
-    }
-}
-
-impl<'a, 'b> Iterator for RepoIter<'a, 'b> {
+impl<'a> Iterator for Crawler<'a> {
     type Item = Output;
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -265,7 +243,7 @@ impl<'a, 'b> Iterator for RepoIter<'a, 'b> {
                 Some(entry) => {
                     let path = entry.path();
                     if let Ok(repo) = Repository::open(path) {
-                        if let Some(output) = self.crawler.repo_ops(&repo) {
+                        if let Some(output) = self.repo_ops(&repo) {
                             return Some(output);
                         }
                     }
