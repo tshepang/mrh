@@ -24,7 +24,7 @@ extern crate walkdir;
 use std::path::{Path, PathBuf};
 
 use ordermap::set::OrderSet as Set;
-use walkdir::{DirEntry, WalkDir};
+use walkdir::WalkDir;
 use git2::{Branch, Delta, Error, Repository, StatusOptions};
 
 /// Represents Crawler output
@@ -53,7 +53,7 @@ pub struct Crawler<'a> {
     absolute_paths: bool,
     untagged_heads: bool,
     root_path: &'a Path,
-    iter: Box<Iterator<Item = DirEntry>>,
+    iter: Box<Iterator<Item = Repository>>,
 }
 
 impl<'a> Crawler<'a> {
@@ -68,9 +68,10 @@ impl<'a> Crawler<'a> {
             iter: Box::new(
                 WalkDir::new(root)
                     .into_iter()
-                    .filter_entry(|entry| is_git_dir(entry))
                     .filter_map(|entry| entry.ok()) // ignore stuff we can't read
                     .filter(|entry| entry.file_type().is_dir()) // ignore non-dirs
+                    .filter(|entry| entry.file_name() != ".git") // avoid double-hits
+                    .filter_map(|entry| Repository::open(entry.path()).ok())
             ),
         }
     }
@@ -104,6 +105,10 @@ impl<'a> Crawler<'a> {
 
     fn repo_ops(&self, repo: &Repository) -> Option<Output> {
         if let Some(path) = repo.workdir() {
+            // ignore libgit2-sys test repos
+            if git2::Repository::discover(path).is_err() {
+                return None;
+            }
             let mut path = path.to_path_buf();
             if !self.absolute_paths {
                 path = self.make_relative(&path);
@@ -247,23 +252,12 @@ impl<'a> Iterator for Crawler<'a> {
         loop {
             match self.iter.next() {
                 None => return None,
-                Some(entry) => {
-                    let path = entry.path();
-                    if let Ok(repo) = Repository::open(path) {
-                        if let Some(output) = self.repo_ops(&repo) {
-                            return Some(output);
-                        }
+                Some(repo) => {
+                    if let Some(output) = self.repo_ops(&repo) {
+                        return Some(output);
                     }
                 }
             }
         }
     }
-}
-
-fn is_git_dir(entry: &DirEntry) -> bool {
-    entry
-        .file_name()
-        .to_str()
-        .map(|string| !string.starts_with(".git"))
-        .unwrap_or(false)
 }
