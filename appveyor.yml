@@ -27,7 +27,7 @@ environment:
 
 install:
   - appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
-  - rustup-init --yes --verbose --default-toolchain %channel% --default-host %target%
+  - rustup-init -y --verbose --default-toolchain %channel% --default-host %target%
   - set PATH=%PATH%;%USERPROFILE%\.cargo\bin
   - rustc --verbose --version
   - cargo --verbose --version
