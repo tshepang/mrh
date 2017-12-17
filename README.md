@@ -42,6 +42,9 @@ Include repos whose HEAD commits are not tagged:
     foo (uncommitted changes, unpushed commits, untagged HEAD)
     bar (untagged HEAD)
 
+For cases where JSON or YAML output is desired,
+use `--output-json` or `--output-yaml` flags, respectively.
+
 
 ## Notes
 
@@ -55,6 +58,10 @@ Following is the most easy way to install the tool
 (assuming you have the [Rust toolchain installed][install]):
 
     cargo install mrh
+
+JSON and YAML output formats are behind feature flags:
+
+    cargo install mrh --features "yaml json"
 
 For library usage, check them [API docs][docs].
 

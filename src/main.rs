@@ -3,6 +3,13 @@ extern crate mrh;
 extern crate structopt;
 #[macro_use]
 extern crate structopt_derive;
+#[cfg(feature = "json")]
+extern crate serde_json;
+#[cfg(feature = "yaml")]
+extern crate serde_yaml;
+#[cfg(any(feature = "yaml", feature = "json"))]
+#[macro_use]
+extern crate serde_derive;
 
 use structopt::StructOpt;
 use ansi_term::Color;
@@ -34,6 +41,25 @@ struct Opt {
         help = "Check if HEAD is untagged",
     )]
     untagged_heads: bool,
+    #[structopt(
+        long = "output-yaml",
+        help = "Display output in YAML format",
+        conflicts_with = "output_json",
+    )]
+    output_yaml: bool,
+    #[structopt(
+        long = "output-json",
+        help = "Display output in JSON format",
+    )]
+    output_json: bool,
+}
+
+#[cfg(any(feature = "yaml", feature = "json"))]
+#[derive(Serialize)]
+struct Output {
+    pub path: Option<String>,
+    pub pending: Option<Vec<String>>,
+    pub error: Option<String>,
 }
 
 fn main() {
@@ -54,6 +80,15 @@ fn main() {
         .ignore_untracked(cli.ignore_untracked)
         .absolute_paths(cli.absolute_paths)
         .untagged_heads(cli.untagged_heads);
+    if cli.output_json || cli.output_yaml {
+        display(crawler, &cli);
+
+    } else {
+        display_custom(crawler);
+    }
+}
+
+fn display_custom(crawler: mrh::Crawler) {
     for result in crawler {
         if let Some(path) = result.path {
             print!("{}", path.display());
@@ -71,4 +106,67 @@ fn main() {
         }
         println!();
     }
+}
+
+#[cfg(any(feature = "yaml", feature = "json"))]
+fn display(crawler: mrh::Crawler, cli: &Opt) {
+    let mut results: Vec<Output> = Vec::new();
+    for result in crawler {
+        let path = match result.path {
+            Some(path) => Some(path.to_string_lossy().to_string()),
+            None => None,
+        };
+        let pending = match result.pending {
+            Some(pending) => {
+                let vec: Vec<_> = pending.iter().map(|value| value.to_string()).collect();
+                Some(vec)
+            }
+            None => None,
+        };
+        let error = match result.error {
+            Some(error) => Some(error.to_string()),
+            None => None,
+        };
+        results.push(Output {
+            path: path,
+            pending: pending,
+            error: error,
+        });
+    }
+    if cli.output_json {
+        display_json(&results);
+    } else if cli.output_yaml {
+        display_yaml(&results);
+    } else {
+       unreachable!();
+    }
+}
+#[cfg(not(any(feature = "yaml", feature = "json")))]
+fn display(_: mrh::Crawler, cli: &Opt) {
+    let format = if cli.output_json { "JSON" } else { "YAML" };
+    eprintln!("Support for {} output format not compiled in", format);
+}
+
+#[cfg(feature = "json")]
+fn display_json(results: &[Output]) {
+    if let Err(why) = serde_json::to_writer(std::io::stdout(), &results) {
+        eprintln!("{}", why);
+    }
+}
+#[cfg(not(feature = "json"))]
+#[cfg(feature = "yaml")]
+fn display_json(_: &[Output]) {
+    eprintln!("Support for YAML output format not compiled in");
+}
+
+#[cfg(feature = "yaml")]
+fn display_yaml(results: &[Output]) {
+    if let Err(why) = serde_yaml::to_writer(std::io::stdout(), &results) {
+        eprintln!("{}", why);
+    }
+}
+#[cfg(not(feature = "yaml"))]
+#[cfg(feature = "json")]
+fn display_yaml(_: &[Output]) {
+    eprintln!("Support for JSON output format not compiled in");
 }
