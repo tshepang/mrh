@@ -19,3 +19,4 @@ ordermap = "0.3"
 
 [badges]
 travis-ci = { repository = "tshepang/mrh" }
+appveyor = { repository = "tshepang/mrh" }
