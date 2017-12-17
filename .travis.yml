@@ -6,4 +6,9 @@ rust:
   - stable
   - beta
   - nightly
+script:
+  - cargo build
+  - cargo build --features "json"
+  - cargo build --features "yaml"
+  - cargo build --features "json yaml"
 cache: cargo
