@@ -82,7 +82,6 @@ fn main() {
         .untagged_heads(cli.untagged_heads);
     if cli.output_json || cli.output_yaml {
         display(crawler, &cli);
-
     } else {
         display_custom(crawler);
     }
@@ -138,7 +137,7 @@ fn display(crawler: mrh::Crawler, cli: &Opt) {
     } else if cli.output_yaml {
         display_yaml(&results);
     } else {
-       unreachable!();
+        unreachable!();
     }
 }
 #[cfg(not(any(feature = "yaml", feature = "json")))]
