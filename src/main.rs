@@ -11,6 +11,8 @@ extern crate serde_yaml;
 #[macro_use]
 extern crate serde_derive;
 
+use std::process;
+
 use structopt::StructOpt;
 use ansi_term::Color;
 use mrh::Crawler;
@@ -72,7 +74,7 @@ fn main() {
                 BRIGHT_RED.paint("error"),
                 why.to_string(),
             );
-            std::process::exit(1)
+            process::exit(1)
         }
     };
     let crawler = Crawler::new(&current_dir)
@@ -141,32 +143,35 @@ fn display(result: mrh::Output, cli: &Opt) {
 fn display(_: mrh::Output, cli: &Opt) {
     let format = if cli.output_json { "JSON" } else { "YAML" };
     eprintln!("Support for {} output format not compiled in", format);
+    process::exit(1);
 }
 
 #[cfg(feature = "json")]
 fn display_json(output: &Output) {
     if let Err(why) = serde_json::to_writer(std::io::stdout(), &output) {
         eprintln!("{}", why);
-    } else {
-        println!();
+        process::exit(1);
     }
+    println!();
 }
 #[cfg(not(feature = "json"))]
 #[cfg(feature = "yaml")]
 fn display_json(_: &Output) {
     eprintln!("Support for YAML output format not compiled in");
+    process::exit(1);
 }
 
 #[cfg(feature = "yaml")]
 fn display_yaml(output: &Output) {
     if let Err(why) = serde_yaml::to_writer(std::io::stdout(), &output) {
         eprintln!("{}", why);
-    } else {
-        println!();
+        process::exit(1);
     }
+    println!();
 }
 #[cfg(not(feature = "yaml"))]
 #[cfg(feature = "json")]
 fn display_yaml(_: &Output) {
     eprintln!("Support for JSON output format not compiled in");
+    process::exit(1);
 }
