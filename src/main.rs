@@ -141,7 +141,7 @@ fn display_json(output: mrh::Output) {
 }
 #[cfg(not(feature = "json"))]
 fn display_json(_: mrh::Output) {
-    eprintln!("Support for YAML output format not compiled in");
+    eprintln!("Support for JSON output format not compiled in");
     process::exit(1);
 }
 
@@ -156,6 +156,6 @@ fn display_yaml(output: mrh::Output) {
 }
 #[cfg(not(feature = "yaml"))]
 fn display_yaml(_: mrh::Output) {
-    eprintln!("Support for JSON output format not compiled in");
+    eprintln!("Support for YAML output format not compiled in");
     process::exit(1);
 }
