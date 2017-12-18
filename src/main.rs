@@ -109,7 +109,6 @@ fn display_human(crawler: mrh::Crawler) {
 
 #[cfg(any(feature = "yaml", feature = "json"))]
 fn display(crawler: mrh::Crawler, cli: &Opt) {
-    let mut results: Vec<Output> = Vec::new();
     for result in crawler {
         let path = match result.path {
             Some(path) => Some(path.to_string_lossy().to_string()),
@@ -126,18 +125,18 @@ fn display(crawler: mrh::Crawler, cli: &Opt) {
             Some(error) => Some(error.to_string()),
             None => None,
         };
-        results.push(Output {
+        let output = Output {
             path: path,
             pending: pending,
             error: error,
-        });
-    }
-    if cli.output_json {
-        display_json(&results);
-    } else if cli.output_yaml {
-        display_yaml(&results);
-    } else {
-        unreachable!();
+        };
+        if cli.output_json {
+            display_json(&output);
+        } else if cli.output_yaml {
+            display_yaml(&output);
+        } else {
+            unreachable!();
+        }
     }
 }
 #[cfg(not(any(feature = "yaml", feature = "json")))]
@@ -147,25 +146,29 @@ fn display(_: mrh::Crawler, cli: &Opt) {
 }
 
 #[cfg(feature = "json")]
-fn display_json(results: &[Output]) {
-    if let Err(why) = serde_json::to_writer(std::io::stdout(), &results) {
+fn display_json(output: &Output) {
+    if let Err(why) = serde_json::to_writer(std::io::stdout(), &output) {
         eprintln!("{}", why);
+    } else {
+        println!();
     }
 }
 #[cfg(not(feature = "json"))]
 #[cfg(feature = "yaml")]
-fn display_json(_: &[Output]) {
+fn display_json(_: &Output) {
     eprintln!("Support for YAML output format not compiled in");
 }
 
 #[cfg(feature = "yaml")]
-fn display_yaml(results: &[Output]) {
-    if let Err(why) = serde_yaml::to_writer(std::io::stdout(), &results) {
+fn display_yaml(output: &Output) {
+    if let Err(why) = serde_yaml::to_writer(std::io::stdout(), &output) {
         eprintln!("{}", why);
+    } else {
+        println!();
     }
 }
 #[cfg(not(feature = "yaml"))]
 #[cfg(feature = "json")]
-fn display_yaml(_: &[Output]) {
+fn display_yaml(_: &Output) {
     eprintln!("Support for JSON output format not compiled in");
 }
