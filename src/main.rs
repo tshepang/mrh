@@ -80,67 +80,65 @@ fn main() {
         .ignore_untracked(cli.ignore_untracked)
         .absolute_paths(cli.absolute_paths)
         .untagged_heads(cli.untagged_heads);
-    if cli.output_json || cli.output_yaml {
-        display(crawler, &cli);
-    } else {
-        display_human(crawler);
+    for output in crawler {
+        if cli.output_json || cli.output_yaml {
+            display(output, &cli);
+        } else {
+            display_human(output);
+        }
     }
 }
 
-fn display_human(crawler: mrh::Crawler) {
-    for result in crawler {
-        if let Some(path) = result.path {
-            print!("{}", path.display());
-        }
-        if let Some(pending) = result.pending {
-            let pending: Vec<_> = pending.into_iter().collect();
-            print!(" ({})", CYAN.paint(pending.join(", ")));
-        }
-        if let Some(error) = result.error {
-            print!(
-                " ({}: {})",
-                BRIGHT_RED.paint("error"),
-                BRIGHT_BLACK.paint(error.to_string()),
-            );
-        }
-        println!();
+fn display_human(result: mrh::Output) {
+    if let Some(path) = result.path {
+        print!("{}", path.display());
     }
+    if let Some(pending) = result.pending {
+        let pending: Vec<_> = pending.into_iter().collect();
+        print!(" ({})", CYAN.paint(pending.join(", ")));
+    }
+    if let Some(error) = result.error {
+        print!(
+            " ({}: {})",
+            BRIGHT_RED.paint("error"),
+            BRIGHT_BLACK.paint(error.to_string()),
+        );
+    }
+    println!();
 }
 
 #[cfg(any(feature = "yaml", feature = "json"))]
-fn display(crawler: mrh::Crawler, cli: &Opt) {
-    for result in crawler {
-        let path = match result.path {
-            Some(path) => Some(path.to_string_lossy().to_string()),
-            None => None,
-        };
-        let pending = match result.pending {
-            Some(pending) => {
-                let vec: Vec<_> = pending.iter().map(|value| value.to_string()).collect();
-                Some(vec)
-            }
-            None => None,
-        };
-        let error = match result.error {
-            Some(error) => Some(error.to_string()),
-            None => None,
-        };
-        let output = Output {
-            path: path,
-            pending: pending,
-            error: error,
-        };
-        if cli.output_json {
-            display_json(&output);
-        } else if cli.output_yaml {
-            display_yaml(&output);
-        } else {
-            unreachable!();
+fn display(result: mrh::Output, cli: &Opt) {
+    let path = match result.path {
+        Some(path) => Some(path.to_string_lossy().to_string()),
+        None => None,
+    };
+    let pending = match result.pending {
+        Some(pending) => {
+            let vec: Vec<_> = pending.iter().map(|value| value.to_string()).collect();
+            Some(vec)
         }
+        None => None,
+    };
+    let error = match result.error {
+        Some(error) => Some(error.to_string()),
+        None => None,
+    };
+    let output = Output {
+        path: path,
+        pending: pending,
+        error: error,
+    };
+    if cli.output_json {
+        display_json(&output);
+    } else if cli.output_yaml {
+        display_yaml(&output);
+    } else {
+        unreachable!();
     }
 }
 #[cfg(not(any(feature = "yaml", feature = "json")))]
-fn display(_: mrh::Crawler, cli: &Opt) {
+fn display(_: mrh::Output, cli: &Opt) {
     let format = if cli.output_json { "JSON" } else { "YAML" };
     eprintln!("Support for {} output format not compiled in", format);
 }
