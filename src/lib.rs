@@ -39,7 +39,7 @@ use git2::{Branch, Delta, Error, Repository, StatusOptions};
 /// - There are pending states... `path` and `pending` will have values
 pub struct Output {
     /// Repository path
-    pub path: Option<PathBuf>,
+    pub path: PathBuf,
     /// A list of pending actions
     pub pending: Option<Set<&'static str>>,
     /// Git-related error
@@ -163,7 +163,7 @@ impl<'a> Crawler<'a> {
                         Ok(head) => head,
                         Err(why) => {
                             return Some(Output {
-                                path: Some(path),
+                                path: path,
                                 pending: None,
                                 error: Some(why),
                             });
@@ -208,13 +208,13 @@ impl<'a> Crawler<'a> {
                     }
                     if !pending.is_empty() {
                         Some(Output {
-                            path: Some(path),
+                            path: path,
                             pending: Some(pending),
                             error: None,
                         })
                     } else if !self.pending {
                         Some(Output {
-                            path: Some(path),
+                            path: path,
                             pending: None,
                             error: None,
                         })
@@ -223,7 +223,7 @@ impl<'a> Crawler<'a> {
                     }
                 }
                 Err(why) => Some(Output {
-                    path: Some(path),
+                    path: path,
                     pending: None,
                     error: Some(why),
                 }),

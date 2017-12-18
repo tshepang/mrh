@@ -59,7 +59,7 @@ struct Opt {
 #[cfg(any(feature = "yaml", feature = "json"))]
 #[derive(Serialize)]
 struct Output {
-    pub path: Option<String>,
+    pub path: String,
     pub pending: Option<Vec<String>>,
     pub error: Option<String>,
 }
@@ -92,9 +92,7 @@ fn main() {
 }
 
 fn display_human(result: mrh::Output) {
-    if let Some(path) = result.path {
-        print!("{}", path.display());
-    }
+    print!("{}", result.path.display());
     if let Some(pending) = result.pending {
         let pending: Vec<_> = pending.into_iter().collect();
         print!(" ({})", CYAN.paint(pending.join(", ")));
@@ -111,10 +109,7 @@ fn display_human(result: mrh::Output) {
 
 #[cfg(any(feature = "yaml", feature = "json"))]
 fn display(result: mrh::Output, cli: &Opt) {
-    let path = match result.path {
-        Some(path) => Some(path.to_string_lossy().to_string()),
-        None => None,
-    };
+    let path = result.path.to_string_lossy().to_string();
     let pending = match result.pending {
         Some(pending) => {
             let vec: Vec<_> = pending.iter().map(|value| value.to_string()).collect();
