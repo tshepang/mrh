@@ -83,8 +83,10 @@ fn main() {
         .absolute_paths(cli.absolute_paths)
         .untagged_heads(cli.untagged_heads);
     for output in crawler {
-        if cli.output_json || cli.output_yaml {
-            display(output, &cli);
+        if cli.output_json {
+            display_json(output);
+        } else if cli.output_yaml {
+            display_yaml(output);
         } else {
             display_human(output);
         }
@@ -108,7 +110,7 @@ fn display_human(result: mrh::Output) {
 }
 
 #[cfg(any(feature = "yaml", feature = "json"))]
-fn display(result: mrh::Output, cli: &Opt) {
+fn make_serde_digestible(result: mrh::Output) -> Output {
     let path = result.path.to_string_lossy().to_string();
     let pending = match result.pending {
         Some(pending) => {
@@ -121,28 +123,16 @@ fn display(result: mrh::Output, cli: &Opt) {
         Some(error) => Some(error.to_string()),
         None => None,
     };
-    let output = Output {
+    Output {
         path: path,
         pending: pending,
         error: error,
-    };
-    if cli.output_json {
-        display_json(&output);
-    } else if cli.output_yaml {
-        display_yaml(&output);
-    } else {
-        unreachable!();
     }
-}
-#[cfg(not(any(feature = "yaml", feature = "json")))]
-fn display(_: mrh::Output, cli: &Opt) {
-    let format = if cli.output_json { "JSON" } else { "YAML" };
-    eprintln!("Support for {} output format not compiled in", format);
-    process::exit(1);
 }
 
 #[cfg(feature = "json")]
-fn display_json(output: &Output) {
+fn display_json(output: mrh::Output) {
+    let output = make_serde_digestible(output);
     if let Err(why) = serde_json::to_writer(std::io::stdout(), &output) {
         eprintln!("{}", why);
         process::exit(1);
@@ -150,14 +140,14 @@ fn display_json(output: &Output) {
     println!();
 }
 #[cfg(not(feature = "json"))]
-#[cfg(feature = "yaml")]
-fn display_json(_: &Output) {
+fn display_json(_: mrh::Output) {
     eprintln!("Support for YAML output format not compiled in");
     process::exit(1);
 }
 
 #[cfg(feature = "yaml")]
-fn display_yaml(output: &Output) {
+fn display_yaml(output: mrh::Output) {
+    let output = make_serde_digestible(output);
     if let Err(why) = serde_yaml::to_writer(std::io::stdout(), &output) {
         eprintln!("{}", why);
         process::exit(1);
@@ -165,8 +155,7 @@ fn display_yaml(output: &Output) {
     println!();
 }
 #[cfg(not(feature = "yaml"))]
-#[cfg(feature = "json")]
-fn display_yaml(_: &Output) {
+fn display_yaml(_: mrh::Output) {
     eprintln!("Support for JSON output format not compiled in");
     process::exit(1);
 }
