@@ -69,7 +69,7 @@ fn main() {
     let current_dir = match std::env::current_dir() {
         Ok(dir) => dir,
         Err(why) => {
-            println!(
+            eprintln!(
                 "{}: Could not read current directory: {}",
                 BRIGHT_RED.paint("error"),
                 why.to_string(),
