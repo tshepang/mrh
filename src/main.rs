@@ -83,11 +83,11 @@ fn main() {
     if cli.output_json || cli.output_yaml {
         display(crawler, &cli);
     } else {
-        display_custom(crawler);
+        display_human(crawler);
     }
 }
 
-fn display_custom(crawler: mrh::Crawler) {
+fn display_human(crawler: mrh::Crawler) {
     for result in crawler {
         if let Some(path) = result.path {
             print!("{}", path.display());
