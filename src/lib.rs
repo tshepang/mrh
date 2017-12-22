@@ -191,8 +191,8 @@ impl<'a> Crawler<'a> {
                     let branch = Branch::wrap(local_ref);
                     if let Ok(upstream_branch) = branch.upstream() {
                         let remote_ref = upstream_branch.into_reference();
-                        let local_oid = branch.get().target().unwrap();
                         let remote_oid = remote_ref.target().unwrap();
+                        let local_oid = branch.get().target().unwrap();
                         if local_oid != remote_oid {
                             if let Ok((ahead, behind)) =
                                 repo.graph_ahead_behind(local_oid, remote_oid)
