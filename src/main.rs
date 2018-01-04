@@ -44,6 +44,11 @@ struct Opt {
     )]
     untagged_heads: bool,
     #[structopt(
+        long = "access-remote",
+        help = "Compare against remote repo, most likely over the network",
+    )]
+    access_remote: bool,
+    #[structopt(
         long = "output-yaml",
         help = "Display output in YAML format",
         conflicts_with = "output_json",
@@ -80,6 +85,7 @@ fn main() {
     let crawler = Crawler::new(&current_dir)
         .pending(cli.pending)
         .ignore_untracked(cli.ignore_untracked)
+        .access_remote(cli.access_remote)
         .absolute_paths(cli.absolute_paths)
         .untagged_heads(cli.untagged_heads);
     for output in crawler {

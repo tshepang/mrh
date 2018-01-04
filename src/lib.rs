@@ -7,6 +7,8 @@
 //! - untracked files (can be disabled flag)
 //! - unpushed commits
 //! - unpulled commits
+//! - unpushed tags
+//! - unpulled tags
 //! - added files
 //! - deleted files
 //! - renamed files
@@ -52,6 +54,7 @@ pub struct Crawler<'a> {
     ignore_untracked: bool,
     absolute_paths: bool,
     untagged_heads: bool,
+    access_remote: bool,
     root_path: &'a Path,
     iter: Box<Iterator<Item = Repository>>,
 }
@@ -64,6 +67,7 @@ impl<'a> Crawler<'a> {
             ignore_untracked: false,
             absolute_paths: false,
             untagged_heads: false,
+            access_remote: false,
             root_path: root,
             iter: Box::new(
                 WalkDir::new(root)
@@ -103,11 +107,61 @@ impl<'a> Crawler<'a> {
         self
     }
 
+    /// Allow access to the remote of the repo
+    ///
+    /// This allows checking if the repo is in sync with upstream,
+    /// so will be relatively slow if remote is behind a network
+    /// (which is the most likely scenario).
+    pub fn access_remote(mut self, answer: bool) -> Self {
+        self.access_remote = answer;
+        self
+    }
+
     fn repo_ops(&self, repo: &Repository) -> Option<Output> {
         if let Some(path) = repo.workdir() {
             // ignore libgit2-sys test repos
             if git2::Repository::discover(path).is_err() {
                 return None;
+            }
+            let mut pending = Set::new();
+            if self.access_remote {
+                if let Ok(mut remote) = repo.find_remote("origin") {
+                    if let Err(why) = remote.connect(git2::Direction::Fetch) {
+                        return Some(Output {
+                            path: path.into(),
+                            pending: None,
+                            error: Some(why),
+                        })
+                    }
+                    let mut remote_tags = Set::new();
+                    if let Ok(remote_list) = remote.list() {
+                        for item in remote_list {
+                            if !item.name().starts_with("refs/tags/") {
+                                continue;
+                            }
+                            remote_tags.insert((item.name().to_string(), item.oid()));
+                        }
+                        let mut local_tags = Set::new();
+                        if let Ok(tags) = repo.tag_names(None) {
+                            for tag in tags.iter() {
+                                if let Some(tag) = tag {
+                                    let tag = format!("refs/tags/{}", tag);
+                                    if let Ok(reference) = repo.find_reference(&tag) {
+                                        if let Some(oid) = reference.target() {
+                                            local_tags.insert((tag, oid));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if !local_tags.is_subset(&remote_tags) {
+                            pending.insert("unpushed tags");
+                        }
+                        if !remote_tags.is_subset(&local_tags) {
+                            pending.insert("unpulled tags");
+                        }
+                    }
+                }
             }
             let mut path = path.to_path_buf();
             if !self.absolute_paths {
@@ -120,7 +174,6 @@ impl<'a> Crawler<'a> {
                 .renames_index_to_workdir(true);
             match repo.statuses(Some(&mut opts)) {
                 Ok(statuses) => {
-                    let mut pending = Set::new();
                     for status in statuses.iter() {
                         if let Some(diff_delta) = status.index_to_workdir() {
                             match diff_delta.status() {
