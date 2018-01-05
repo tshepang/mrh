@@ -77,7 +77,7 @@ impl<'a> Crawler<'a> {
                     .filter_map(|entry| entry.ok()) // ignore stuff we can't read
                     .filter(|entry| entry.file_type().is_dir()) // ignore non-dirs
                     .filter(|entry| entry.file_name() != ".git") // avoid double-hits
-                    .filter_map(|entry| Repository::open(entry.path()).ok())
+                    .filter_map(|entry| Repository::open(entry.path()).ok()),
             ),
         }
     }
@@ -239,30 +239,28 @@ impl<'a> Crawler<'a> {
                             let url = remote_clone.url().unwrap();
                             let mut callbacks = git2::RemoteCallbacks::new();
                             if url.starts_with("http") {
-                                callbacks.credentials(
-                                    |_, _, _| git2::Cred::credential_helper(&config, url, None),
-                                );
+                                callbacks.credentials(|_, _, _| {
+                                    git2::Cred::credential_helper(&config, url, None)
+                                });
                             } else if url.starts_with("git") {
-                                let path_partial = Path::new(&std::env::home_dir().unwrap()).join(".ssh");
+                                let path_partial =
+                                    Path::new(&std::env::home_dir().unwrap()).join(".ssh");
                                 let mut private_key = path_partial.join("id_rsa");
                                 if !private_key.exists() {
                                     private_key = path_partial.join("id_dsa");
                                 }
-                                callbacks.credentials(
-                                    move |_, _, _| git2::Cred::ssh_key(
-                                        "git",
-                                        None,
-                                        &private_key,
-                                        None,
-                                    )
-                                );
+                                callbacks.credentials(move |_, _, _| {
+                                    git2::Cred::ssh_key("git", None, &private_key, None)
+                                });
                             }
-                            if let Err(why) = remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None) {
+                            if let Err(why) =
+                                remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None)
+                            {
                                 return Some(Output {
                                     path: path,
                                     pending: None,
                                     error: Some(why),
-                                })
+                                });
                             }
                             let branch = Branch::wrap(local_ref);
                             let local_head_oid = branch.get().target().unwrap();
@@ -273,13 +271,14 @@ impl<'a> Crawler<'a> {
                                     if name.starts_with("refs/tags/") {
                                         // This weirdness of a postfix appears on some remote tags
                                         if !name.ends_with("^{}") {
-                                            remote_tags.insert((item.name().to_string(), item.oid()));
+                                            remote_tags
+                                                .insert((item.name().to_string(), item.oid()));
                                         }
                                     } else if name == "HEAD" &&
                                     // XXX This can be better!
-                                        item.oid() != local_head_oid &&
-                                        !pending.contains("unpushed commits") &&
-                                        !pending.contains("outdated branch")
+                                        item.oid() != local_head_oid
+                                        && !pending.contains("unpushed commits")
+                                        && !pending.contains("outdated branch")
                                     {
                                         pending.insert("unpulled commits");
                                     }
