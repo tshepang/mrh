@@ -234,7 +234,30 @@ impl<'a> Crawler<'a> {
                             }
                         };
                         if let Ok(mut remote) = repo.find_remote("origin") {
-                            if let Err(why) = remote.connect(git2::Direction::Fetch) {
+                            let remote_clone = remote.clone();
+                            let config = git2::Config::open_default().unwrap();
+                            let url = remote_clone.url().unwrap();
+                            let mut callbacks = git2::RemoteCallbacks::new();
+                            if url.starts_with("http") {
+                                callbacks.credentials(
+                                    |_, _, _| git2::Cred::credential_helper(&config, url, None),
+                                );
+                            } else if url.starts_with("git") {
+                                let path_partial = Path::new(&std::env::home_dir().unwrap()).join(".ssh");
+                                let mut private_key = path_partial.join("id_rsa");
+                                if !private_key.exists() {
+                                    private_key = path_partial.join("id_dsa");
+                                }
+                                callbacks.credentials(
+                                    move |_, _, _| git2::Cred::ssh_key(
+                                        "git",
+                                        None,
+                                        &private_key,
+                                        None,
+                                    )
+                                );
+                            }
+                            if let Err(why) = remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None) {
                                 return Some(Output {
                                     path: path,
                                     pending: None,
