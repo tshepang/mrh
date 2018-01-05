@@ -8,14 +8,17 @@ children for Git repos.
 It reports if those repos have:
 
 - uncommitted changes
-- untracked files (can be disabled)
 - unpushed commits
-- unpulled commits
+- unpulled commits (optional)
+- outdated branch
 - added files
 - deleted files
 - renamed files
+- untracked files (can be disabled)
 - untagged HEAD (optional)
 - unpushed tags (optional)
+- unpulled tags (optional)
+- unpulled commits (optional)
 
 I also offers a command line tool with all those features,
 one of which is to show all repos:

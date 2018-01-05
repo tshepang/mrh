@@ -5,13 +5,16 @@
 //!
 //! - uncommitted changes
 //! - unpushed commits
+//! - unpulled commits (optional)
 //! - outdated branch
 //! - added files
 //! - deleted files
 //! - renamed files
-//! - untracked files (can be disabled via a flag)
+//! - untracked files (can be disabled)
 //! - untagged HEAD (optional)
 //! - unpushed tags (optional)
+//! - unpulled tags (optional)
+//! - unpulled commits (optional)
 //!
 //! This library is meant to inspect those states, given a root path as
 //! starting point.
@@ -123,6 +126,16 @@ impl<'a> Crawler<'a> {
                 return None;
             }
             let mut pending = Set::new();
+            let local_ref = match repo.head() {
+                Ok(head) => head,
+                Err(why) => {
+                    return Some(Output {
+                        path: path.into(),
+                        pending: None,
+                        error: Some(why),
+                    });
+                }
+            };
             if self.access_remote {
                 if let Ok(mut remote) = repo.find_remote("origin") {
                     if let Err(why) = remote.connect(git2::Direction::Fetch) {
@@ -132,10 +145,15 @@ impl<'a> Crawler<'a> {
                             error: Some(why),
                         })
                     }
+                    let branch = Branch::wrap(local_ref);
+                    let local_head_oid = branch.get().target().unwrap();
                     let mut remote_tags = Set::new();
                     if let Ok(remote_list) = remote.list() {
                         for item in remote_list {
                             if !item.name().starts_with("refs/tags/") {
+                                if item.name() == "HEAD" && item.oid() != local_head_oid {
+                                    pending.insert("unpulled commits");
+                                }
                                 continue;
                             }
                             remote_tags.insert((item.name().to_string(), item.oid()));
@@ -155,6 +173,9 @@ impl<'a> Crawler<'a> {
                         }
                         if !local_tags.is_subset(&remote_tags) {
                             pending.insert("unpushed tags");
+                        }
+                        if !remote_tags.is_subset(&local_tags) {
+                            pending.insert("unpulled tags");
                         }
                     }
                 }
