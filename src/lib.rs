@@ -150,13 +150,17 @@ impl<'a> Crawler<'a> {
                     let mut remote_tags = Set::new();
                     if let Ok(remote_list) = remote.list() {
                         for item in remote_list {
-                            if !item.name().starts_with("refs/tags/") {
-                                if item.name() == "HEAD" && item.oid() != local_head_oid {
+                            let name = item.name();
+                            if name.starts_with("refs/tags/") {
+                                // This weirdness of a postfix appears on some remote tags
+                                if !name.ends_with("^{}") {
+                                    remote_tags.insert((item.name().to_string(), item.oid()));
+                                }
+                            } else {
+                                if name == "HEAD" && item.oid() != local_head_oid {
                                     pending.insert("unpulled commits");
                                 }
-                                continue;
                             }
-                            remote_tags.insert((item.name().to_string(), item.oid()));
                         }
                         let mut local_tags = Set::new();
                         if let Ok(tags) = repo.tag_names(None) {
