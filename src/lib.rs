@@ -6,7 +6,7 @@
 //! - uncommitted changes
 //! - untracked files (can be disabled via a flag)
 //! - unpushed commits
-//! - unpulled commits
+//! - outdated branch
 //! - unpushed tags (optional)
 //! - unpulled tags (optional)
 //! - added files
@@ -254,7 +254,7 @@ impl<'a> Crawler<'a> {
                                     pending.insert("unpushed commits");
                                 }
                                 if behind > 0 {
-                                    pending.insert("unpulled commits");
+                                    pending.insert("outdated branch");
                                 }
                             }
                         }
