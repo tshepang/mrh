@@ -126,64 +126,6 @@ impl<'a> Crawler<'a> {
                 return None;
             }
             let mut pending = Set::new();
-            let local_ref = match repo.head() {
-                Ok(head) => head,
-                Err(why) => {
-                    return Some(Output {
-                        path: path.into(),
-                        pending: None,
-                        error: Some(why),
-                    });
-                }
-            };
-            if self.access_remote {
-                if let Ok(mut remote) = repo.find_remote("origin") {
-                    if let Err(why) = remote.connect(git2::Direction::Fetch) {
-                        return Some(Output {
-                            path: path.into(),
-                            pending: None,
-                            error: Some(why),
-                        })
-                    }
-                    let branch = Branch::wrap(local_ref);
-                    let local_head_oid = branch.get().target().unwrap();
-                    let mut remote_tags = Set::new();
-                    if let Ok(remote_list) = remote.list() {
-                        for item in remote_list {
-                            let name = item.name();
-                            if name.starts_with("refs/tags/") {
-                                // This weirdness of a postfix appears on some remote tags
-                                if !name.ends_with("^{}") {
-                                    remote_tags.insert((item.name().to_string(), item.oid()));
-                                }
-                            } else {
-                                if name == "HEAD" && item.oid() != local_head_oid {
-                                    pending.insert("unpulled commits");
-                                }
-                            }
-                        }
-                        let mut local_tags = Set::new();
-                        if let Ok(tags) = repo.tag_names(None) {
-                            for tag in tags.iter() {
-                                if let Some(tag) = tag {
-                                    let tag = format!("refs/tags/{}", tag);
-                                    if let Ok(reference) = repo.find_reference(&tag) {
-                                        if let Some(oid) = reference.target() {
-                                            local_tags.insert((tag, oid));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if !local_tags.is_subset(&remote_tags) {
-                            pending.insert("unpushed tags");
-                        }
-                        if !remote_tags.is_subset(&local_tags) {
-                            pending.insert("unpulled tags");
-                        }
-                    }
-                }
-            }
             let mut path = path.to_path_buf();
             if !self.absolute_paths {
                 path = self.make_relative(&path);
@@ -276,6 +218,67 @@ impl<'a> Crawler<'a> {
                                 }
                                 if behind > 0 {
                                     pending.insert("outdated branch");
+                                }
+                            }
+                        }
+                    }
+                    if self.access_remote {
+                        let local_ref = match repo.head() {
+                            Ok(head) => head,
+                            Err(why) => {
+                                return Some(Output {
+                                    path: path,
+                                    pending: None,
+                                    error: Some(why),
+                                });
+                            }
+                        };
+                        if let Ok(mut remote) = repo.find_remote("origin") {
+                            if let Err(why) = remote.connect(git2::Direction::Fetch) {
+                                return Some(Output {
+                                    path: path,
+                                    pending: None,
+                                    error: Some(why),
+                                })
+                            }
+                            let branch = Branch::wrap(local_ref);
+                            let local_head_oid = branch.get().target().unwrap();
+                            let mut remote_tags = Set::new();
+                            if let Ok(remote_list) = remote.list() {
+                                for item in remote_list {
+                                    let name = item.name();
+                                    if name.starts_with("refs/tags/") {
+                                        // This weirdness of a postfix appears on some remote tags
+                                        if !name.ends_with("^{}") {
+                                            remote_tags.insert((item.name().to_string(), item.oid()));
+                                        }
+                                    } else if name == "HEAD" &&
+                                    // XXX This can be better!
+                                        item.oid() != local_head_oid &&
+                                        !pending.contains("unpushed commits") &&
+                                        !pending.contains("outdated branch")
+                                    {
+                                        pending.insert("unpulled commits");
+                                    }
+                                }
+                                let mut local_tags = Set::new();
+                                if let Ok(tags) = repo.tag_names(None) {
+                                    for tag in tags.iter() {
+                                        if let Some(tag) = tag {
+                                            let tag = format!("refs/tags/{}", tag);
+                                            if let Ok(reference) = repo.find_reference(&tag) {
+                                                if let Some(oid) = reference.target() {
+                                                    local_tags.insert((tag, oid));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if !local_tags.is_subset(&remote_tags) {
+                                    pending.insert("unpushed tags");
+                                }
+                                if !remote_tags.is_subset(&local_tags) {
+                                    pending.insert("unpulled tags");
                                 }
                             }
                         }
