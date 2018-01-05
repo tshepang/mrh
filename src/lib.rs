@@ -12,7 +12,6 @@
 //! - untracked files (can be disabled via a flag)
 //! - untagged HEAD (optional)
 //! - unpushed tags (optional)
-//! - unpulled tags (optional)
 //!
 //! This library is meant to inspect those states, given a root path as
 //! starting point.
@@ -156,9 +155,6 @@ impl<'a> Crawler<'a> {
                         }
                         if !local_tags.is_subset(&remote_tags) {
                             pending.insert("unpushed tags");
-                        }
-                        if !remote_tags.is_subset(&local_tags) {
-                            pending.insert("unpulled tags");
                         }
                     }
                 }
