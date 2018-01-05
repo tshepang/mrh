@@ -4,15 +4,15 @@
 //! need to be taken:
 //!
 //! - uncommitted changes
-//! - untracked files (can be disabled via a flag)
 //! - unpushed commits
 //! - outdated branch
-//! - unpushed tags (optional)
-//! - unpulled tags (optional)
 //! - added files
 //! - deleted files
 //! - renamed files
+//! - untracked files (can be disabled via a flag)
 //! - untagged HEAD (optional)
+//! - unpushed tags (optional)
+//! - unpulled tags (optional)
 //!
 //! This library is meant to inspect those states, given a root path as
 //! starting point.
