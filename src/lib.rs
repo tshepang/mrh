@@ -7,8 +7,8 @@
 //! - untracked files (can be disabled via a flag)
 //! - unpushed commits
 //! - unpulled commits
-//! - unpushed tags
-//! - unpulled tags
+//! - unpushed tags (optional)
+//! - unpulled tags (optional)
 //! - added files
 //! - deleted files
 //! - renamed files
