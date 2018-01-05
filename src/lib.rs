@@ -4,7 +4,7 @@
 //! need to be taken:
 //!
 //! - uncommitted changes
-//! - untracked files (can be disabled flag)
+//! - untracked files (can be disabled via a flag)
 //! - unpushed commits
 //! - unpulled commits
 //! - unpushed tags
