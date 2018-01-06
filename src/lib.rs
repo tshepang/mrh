@@ -223,76 +223,14 @@ impl<'a> Crawler<'a> {
                         }
                     }
                     if self.access_remote {
-                        if let Ok(remote) = repo.find_remote("origin") {
-                            let config = git2::Config::open_default().unwrap();
-                            let url = remote.url().unwrap();
-                            let mut callbacks = git2::RemoteCallbacks::new();
-                            if url.starts_with("http") {
-                                callbacks.credentials(|_, _, _| {
-                                    git2::Cred::credential_helper(&config, url, None)
-                                });
-                            } else if url.starts_with("git") {
-                                for file_name in &["id_rsa", "id_dsa"] {
-                                    if let Some(home_dir) = std::env::home_dir() {
-                                        let private_key = home_dir.join(".ssh").join(file_name);
-                                        if private_key.exists() {
-                                            callbacks.credentials(move |_, _, _| {
-                                                git2::Cred::ssh_key("git", None, &private_key, None)
-                                            });
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            // avoid "cannot borrow immutable local variable `remote` as mutable"
-                            let mut remote = remote.clone();
-                            if let Err(why) =
-                                remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None)
-                            {
+                        pending = match self.remote_ops(repo, pending, local_head_oid) {
+                            Ok(pending) => pending,
+                            Err(why) => {
                                 return Some(Output {
                                     path: path,
                                     pending: None,
                                     error: Some(why),
                                 });
-                            }
-                            let mut remote_tags = Set::new();
-                            if let Ok(remote_list) = remote.list() {
-                                for item in remote_list {
-                                    let name = item.name();
-                                    if name.starts_with("refs/tags/") {
-                                        // This weirdness of a postfix appears on some remote tags
-                                        if !name.ends_with("^{}") {
-                                            remote_tags
-                                                .insert((item.name().to_string(), item.oid()));
-                                        }
-                                    } else if name == "HEAD" &&
-                                    // XXX This can be better!
-                                        item.oid() != local_head_oid
-                                        && !pending.contains("unpushed commits")
-                                        && !pending.contains("outdated branch")
-                                    {
-                                        pending.insert("unpulled commits");
-                                    }
-                                }
-                                let mut local_tags = Set::new();
-                                if let Ok(tags) = repo.tag_names(None) {
-                                    for tag in tags.iter() {
-                                        if let Some(tag) = tag {
-                                            let tag = format!("refs/tags/{}", tag);
-                                            if let Ok(reference) = repo.find_reference(&tag) {
-                                                if let Some(oid) = reference.target() {
-                                                    local_tags.insert((tag, oid));
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if !local_tags.is_subset(&remote_tags) {
-                                    pending.insert("unpushed tags");
-                                }
-                                if !remote_tags.is_subset(&local_tags) {
-                                    pending.insert("unpulled tags");
-                                }
                             }
                         }
                     }
@@ -333,6 +271,76 @@ impl<'a> Crawler<'a> {
         } else {
             target_dir.into()
         }
+    }
+
+    fn remote_ops<'b>(
+        &self,
+        repo: &Repository,
+        mut pending: Set<&'b str>,
+        local_head_oid: git2::Oid,
+    ) -> Result<Set<&'b str>, Error> {
+        if let Ok(remote) = repo.find_remote("origin") {
+            let config = git2::Config::open_default().unwrap();
+            let url = remote.url().unwrap();
+            let mut callbacks = git2::RemoteCallbacks::new();
+            if url.starts_with("http") {
+                callbacks.credentials(|_, _, _| git2::Cred::credential_helper(&config, url, None));
+            } else if url.starts_with("git") {
+                for file_name in &["id_rsa", "id_dsa"] {
+                    if let Some(home_dir) = std::env::home_dir() {
+                        let private_key = home_dir.join(".ssh").join(file_name);
+                        if private_key.exists() {
+                            callbacks.credentials(move |_, _, _| {
+                                git2::Cred::ssh_key("git", None, &private_key, None)
+                            });
+                            break;
+                        }
+                    }
+                }
+            }
+            // avoid "cannot borrow immutable local variable `remote` as mutable"
+            let mut remote = remote.clone();
+            remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None)?;
+            let mut remote_tags = Set::new();
+            if let Ok(remote_list) = remote.list() {
+                for item in remote_list {
+                    let name = item.name();
+                    if name.starts_with("refs/tags/") {
+                        // This weirdness of a postfix appears on some remote tags
+                        if !name.ends_with("^{}") {
+                            remote_tags.insert((item.name().to_string(), item.oid()));
+                        }
+                    } else if name == "HEAD" &&
+                    // XXX This can be better!
+                        item.oid() != local_head_oid
+                        && !pending.contains("unpushed commits")
+                        && !pending.contains("outdated branch")
+                    {
+                        pending.insert("unpulled commits");
+                    }
+                }
+                let mut local_tags = Set::new();
+                if let Ok(tags) = repo.tag_names(None) {
+                    for tag in tags.iter() {
+                        if let Some(tag) = tag {
+                            let tag = format!("refs/tags/{}", tag);
+                            if let Ok(reference) = repo.find_reference(&tag) {
+                                if let Some(oid) = reference.target() {
+                                    local_tags.insert((tag, oid));
+                                }
+                            }
+                        }
+                    }
+                }
+                if !local_tags.is_subset(&remote_tags) {
+                    pending.insert("unpushed tags");
+                }
+                if !remote_tags.is_subset(&local_tags) {
+                    pending.insert("unpulled tags");
+                }
+            }
+        }
+        Ok(pending)
     }
 }
 
