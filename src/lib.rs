@@ -207,11 +207,11 @@ impl<'a> Crawler<'a> {
                     }
                     if let Ok(upstream_branch) = branch.upstream() {
                         let upstream_ref = upstream_branch.into_reference();
-                        let upstream_oid = upstream_ref.target().unwrap();
-                        let local_oid = branch.get().target().unwrap();
-                        if local_oid != upstream_oid {
+                        let upstream_head_oid = upstream_ref.target().unwrap();
+                        let local_head_oid = branch.get().target().unwrap();
+                        if local_head_oid != upstream_head_oid {
                             if let Ok((ahead, behind)) =
-                                repo.graph_ahead_behind(local_oid, upstream_oid)
+                                repo.graph_ahead_behind(local_head_oid, upstream_head_oid)
                             {
                                 if ahead > 0 {
                                     pending.insert("unpushed commits");
