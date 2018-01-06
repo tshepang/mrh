@@ -261,18 +261,6 @@ impl<'a> Crawler<'a> {
         }
     }
 
-    fn make_relative(&self, target_dir: &Path) -> PathBuf {
-        if let Ok(path) = target_dir.strip_prefix(self.root_path) {
-            if path.to_string_lossy().is_empty() {
-                ".".into()
-            } else {
-                path.into()
-            }
-        } else {
-            target_dir.into()
-        }
-    }
-
     fn remote_ops<'b>(
         &self,
         repo: &Repository,
@@ -341,6 +329,18 @@ impl<'a> Crawler<'a> {
             }
         }
         Ok(pending)
+    }
+
+    fn make_relative(&self, target_dir: &Path) -> PathBuf {
+        if let Ok(path) = target_dir.strip_prefix(self.root_path) {
+            if path.to_string_lossy().is_empty() {
+                ".".into()
+            } else {
+                path.into()
+            }
+        } else {
+            target_dir.into()
+        }
     }
 }
 
