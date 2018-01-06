@@ -242,15 +242,17 @@ impl<'a> Crawler<'a> {
                                     git2::Cred::credential_helper(&config, url, None)
                                 });
                             } else if url.starts_with("git") {
-                                let path_partial =
-                                    Path::new(&std::env::home_dir().unwrap()).join(".ssh");
-                                let mut private_key = path_partial.join("id_rsa");
-                                if !private_key.exists() {
-                                    private_key = path_partial.join("id_dsa");
+                                for file_name in &["id_rsa", "id_dsa"] {
+                                    if let Some(home_dir) = std::env::home_dir() {
+                                        let private_key = home_dir.join(".ssh").join(file_name);
+                                        if private_key.exists() {
+                                            callbacks.credentials(move |_, _, _| {
+                                                git2::Cred::ssh_key("git", None, &private_key, None)
+                                            });
+                                            break;
+                                        }
+                                    }
                                 }
-                                callbacks.credentials(move |_, _, _| {
-                                    git2::Cred::ssh_key("git", None, &private_key, None)
-                                });
                             }
                             if let Err(why) =
                                 remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None)
