@@ -134,6 +134,17 @@ impl<'a> Crawler<'a> {
                 .include_untracked(true)
                 .renames_head_to_index(true)
                 .renames_index_to_workdir(true);
+            let local_ref = match repo.head() {
+                Ok(head) => head,
+                Err(why) => {
+                    return Some(Output {
+                        path: path,
+                        pending: None,
+                        error: Some(why),
+                    });
+                }
+            };
+            let branch = Branch::wrap(local_ref);
             match repo.statuses(Some(&mut opts)) {
                 Ok(statuses) => {
                     for status in statuses.iter() {
@@ -174,24 +185,15 @@ impl<'a> Crawler<'a> {
                             }
                         };
                     }
-                    let local_ref = match repo.head() {
-                        Ok(head) => head,
-                        Err(why) => {
-                            return Some(Output {
-                                path: path,
-                                pending: None,
-                                error: Some(why),
-                            });
-                        }
-                    };
                     if self.untagged_heads {
+                        let local_ref = branch.get();
                         if let Ok(tags) = repo.tag_names(None) {
                             let mut untagged = true;
                             for tag in tags.iter() {
                                 if let Some(tag) = tag {
                                     let tag = format!("refs/tags/{}", tag);
                                     if let Ok(reference) = repo.find_reference(&tag) {
-                                        if reference == local_ref {
+                                        if &reference == local_ref {
                                             untagged = false;
                                             break;
                                         }
@@ -203,7 +205,6 @@ impl<'a> Crawler<'a> {
                             }
                         }
                     }
-                    let branch = Branch::wrap(local_ref);
                     if let Ok(upstream_branch) = branch.upstream() {
                         let remote_ref = upstream_branch.into_reference();
                         let remote_oid = remote_ref.target().unwrap();
@@ -222,16 +223,6 @@ impl<'a> Crawler<'a> {
                         }
                     }
                     if self.access_remote {
-                        let local_ref = match repo.head() {
-                            Ok(head) => head,
-                            Err(why) => {
-                                return Some(Output {
-                                    path: path,
-                                    pending: None,
-                                    error: Some(why),
-                                });
-                            }
-                        };
                         if let Ok(remote) = repo.find_remote("origin") {
                             let config = git2::Config::open_default().unwrap();
                             let url = remote.url().unwrap();
@@ -264,7 +255,6 @@ impl<'a> Crawler<'a> {
                                     error: Some(why),
                                 });
                             }
-                            let branch = Branch::wrap(local_ref);
                             let local_head_oid = branch.get().target().unwrap();
                             let mut remote_tags = Set::new();
                             if let Ok(remote_list) = remote.list() {
