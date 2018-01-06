@@ -145,6 +145,7 @@ impl<'a> Crawler<'a> {
                 }
             };
             let branch = Branch::wrap(local_ref);
+            let local_head_oid = branch.get().target().unwrap();
             match repo.statuses(Some(&mut opts)) {
                 Ok(statuses) => {
                     for status in statuses.iter() {
@@ -208,7 +209,6 @@ impl<'a> Crawler<'a> {
                     if let Ok(upstream_branch) = branch.upstream() {
                         let upstream_ref = upstream_branch.into_reference();
                         let upstream_head_oid = upstream_ref.target().unwrap();
-                        let local_head_oid = branch.get().target().unwrap();
                         if local_head_oid != upstream_head_oid {
                             if let Ok((ahead, behind)) =
                                 repo.graph_ahead_behind(local_head_oid, upstream_head_oid)
@@ -255,7 +255,6 @@ impl<'a> Crawler<'a> {
                                     error: Some(why),
                                 });
                             }
-                            let local_head_oid = branch.get().target().unwrap();
                             let mut remote_tags = Set::new();
                             if let Ok(remote_list) = remote.list() {
                                 for item in remote_list {
