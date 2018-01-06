@@ -5,7 +5,6 @@
 //!
 //! - uncommitted changes
 //! - unpushed commits
-//! - unpulled commits (optional)
 //! - outdated branch
 //! - added files
 //! - deleted files
