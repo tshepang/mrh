@@ -110,7 +110,7 @@ impl<'a> Crawler<'a> {
 
     /// Allow access to the remote of the repo
     ///
-    /// This allows checking if the repo is in sync with upstream,
+    /// This allows checking if the repo is in sync with its remote counterpart,
     /// so will be relatively slow if remote is behind a network
     /// (which is the most likely scenario).
     pub fn access_remote(mut self, answer: bool) -> Self {
@@ -206,12 +206,12 @@ impl<'a> Crawler<'a> {
                         }
                     }
                     if let Ok(upstream_branch) = branch.upstream() {
-                        let remote_ref = upstream_branch.into_reference();
-                        let remote_oid = remote_ref.target().unwrap();
+                        let upstream_ref = upstream_branch.into_reference();
+                        let upstream_oid = upstream_ref.target().unwrap();
                         let local_oid = branch.get().target().unwrap();
-                        if local_oid != remote_oid {
+                        if local_oid != upstream_oid {
                             if let Ok((ahead, behind)) =
-                                repo.graph_ahead_behind(local_oid, remote_oid)
+                                repo.graph_ahead_behind(local_oid, upstream_oid)
                             {
                                 if ahead > 0 {
                                     pending.insert("unpushed commits");
