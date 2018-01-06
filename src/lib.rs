@@ -149,42 +149,7 @@ impl<'a> Crawler<'a> {
             match repo.statuses(Some(&mut opts)) {
                 Ok(statuses) => {
                     for status in statuses.iter() {
-                        if let Some(diff_delta) = status.index_to_workdir() {
-                            match diff_delta.status() {
-                                Delta::Untracked => {
-                                    if !self.ignore_untracked {
-                                        pending.insert("untracked files");
-                                    }
-                                }
-                                Delta::Modified => {
-                                    pending.insert("uncommitted changes");
-                                }
-                                Delta::Deleted => {
-                                    pending.insert("deleted files");
-                                }
-                                Delta::Renamed => {
-                                    pending.insert("renamed files");
-                                }
-                                _ => (),
-                            }
-                        }
-                        if let Some(diff_delta) = status.head_to_index() {
-                            match diff_delta.status() {
-                                Delta::Added => {
-                                    pending.insert("added files");
-                                }
-                                Delta::Modified => {
-                                    pending.insert("uncommitted changes");
-                                }
-                                Delta::Deleted => {
-                                    pending.insert("deleted files");
-                                }
-                                Delta::Renamed => {
-                                    pending.insert("renamed files");
-                                }
-                                _ => (),
-                            }
-                        };
+                        pending = self.diff_ops(&status, pending);
                     }
                     if self.untagged_heads {
                         let local_ref = local_branch.get();
@@ -259,6 +224,46 @@ impl<'a> Crawler<'a> {
         } else {
             None
         }
+    }
+
+    fn diff_ops<'b>(&self, status: &git2::StatusEntry, mut pending: Set<&'b str>) -> Set<&'b str> {
+        if let Some(diff_delta) = status.index_to_workdir() {
+            match diff_delta.status() {
+                Delta::Untracked => {
+                    if !self.ignore_untracked {
+                        pending.insert("untracked files");
+                    }
+                }
+                Delta::Modified => {
+                    pending.insert("uncommitted changes");
+                }
+                Delta::Deleted => {
+                    pending.insert("deleted files");
+                }
+                Delta::Renamed => {
+                    pending.insert("renamed files");
+                }
+                _ => (),
+            }
+        }
+        if let Some(diff_delta) = status.head_to_index() {
+            match diff_delta.status() {
+                Delta::Added => {
+                    pending.insert("added files");
+                }
+                Delta::Modified => {
+                    pending.insert("uncommitted changes");
+                }
+                Delta::Deleted => {
+                    pending.insert("deleted files");
+                }
+                Delta::Renamed => {
+                    pending.insert("renamed files");
+                }
+                _ => (),
+            }
+        };
+        pending
     }
 
     fn remote_ops<'b>(
