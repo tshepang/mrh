@@ -232,10 +232,9 @@ impl<'a> Crawler<'a> {
                                 });
                             }
                         };
-                        if let Ok(mut remote) = repo.find_remote("origin") {
-                            let remote_clone = remote.clone();
+                        if let Ok(remote) = repo.find_remote("origin") {
                             let config = git2::Config::open_default().unwrap();
-                            let url = remote_clone.url().unwrap();
+                            let url = remote.url().unwrap();
                             let mut callbacks = git2::RemoteCallbacks::new();
                             if url.starts_with("http") {
                                 callbacks.credentials(|_, _, _| {
@@ -254,6 +253,8 @@ impl<'a> Crawler<'a> {
                                     }
                                 }
                             }
+                            // avoid "cannot borrow immutable local variable `remote` as mutable"
+                            let mut remote = remote.clone();
                             if let Err(why) =
                                 remote.connect_auth(git2::Direction::Fetch, Some(callbacks), None)
                             {
