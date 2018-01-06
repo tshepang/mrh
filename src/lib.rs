@@ -144,8 +144,8 @@ impl<'a> Crawler<'a> {
                     });
                 }
             };
-            let branch = Branch::wrap(local_ref);
-            let local_head_oid = branch.get().target().unwrap();
+            let local_branch = Branch::wrap(local_ref);
+            let local_head_oid = local_branch.get().target().unwrap();
             match repo.statuses(Some(&mut opts)) {
                 Ok(statuses) => {
                     for status in statuses.iter() {
@@ -187,7 +187,7 @@ impl<'a> Crawler<'a> {
                         };
                     }
                     if self.untagged_heads {
-                        let local_ref = branch.get();
+                        let local_ref = local_branch.get();
                         if let Ok(tags) = repo.tag_names(None) {
                             let mut untagged = true;
                             for tag in tags.iter() {
@@ -206,7 +206,7 @@ impl<'a> Crawler<'a> {
                             }
                         }
                     }
-                    if let Ok(upstream_branch) = branch.upstream() {
+                    if let Ok(upstream_branch) = local_branch.upstream() {
                         let upstream_ref = upstream_branch.into_reference();
                         let upstream_head_oid = upstream_ref.target().unwrap();
                         if local_head_oid != upstream_head_oid {
