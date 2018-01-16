@@ -10,6 +10,7 @@
 //! - deleted files
 //! - renamed files
 //! - untracked files (can be disabled)
+//! - uncommitted repos (can be disabled)
 //! - untagged HEAD (optional)
 //! - unpushed tags (optional)
 //! - unpulled tags (optional)
@@ -53,6 +54,7 @@ pub struct Output {
 pub struct Crawler<'a> {
     pending: bool,
     ignore_untracked: bool,
+    ignore_uncommitted_repos: bool,
     absolute_paths: bool,
     untagged_heads: bool,
     access_remote: bool,
@@ -66,6 +68,7 @@ impl<'a> Crawler<'a> {
         Crawler {
             pending: false,
             ignore_untracked: false,
+            ignore_uncommitted_repos: false,
             absolute_paths: false,
             untagged_heads: false,
             access_remote: false,
@@ -90,6 +93,15 @@ impl<'a> Crawler<'a> {
     /// Decide if you want to exclude matches that have untracked files
     pub fn ignore_untracked(mut self, answer: bool) -> Self {
         self.ignore_untracked = answer;
+        self
+    }
+
+    /// Decide if you want to exclude repos that have no commits
+    ///
+    /// This will happen when a `git init` is executed,
+    /// and one forgets to commit.
+    pub fn ignore_uncommitted_repos(mut self, answer: bool) -> Self {
+        self.ignore_uncommitted_repos = answer;
         self
     }
 
@@ -137,6 +149,12 @@ impl<'a> Crawler<'a> {
             let local_ref = match repo.head() {
                 Ok(head) => head,
                 Err(why) => {
+                    if self.ignore_uncommitted_repos
+                        && why.class() == git2::ErrorClass::Reference
+                        && why.code() == git2::ErrorCode::UnbornBranch
+                    {
+                        return None;
+                    }
                     return Some(Output {
                         path: path,
                         pending: None,

@@ -14,6 +14,7 @@ It reports if those repos have:
 - deleted files
 - renamed files
 - untracked files (can be disabled)
+- uncommitted repos (can be disabled)
 - untagged HEAD (optional)
 - unpushed tags (optional)
 - unpulled tags (optional)

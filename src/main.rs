@@ -34,6 +34,11 @@ struct Opt {
     )]
     ignore_untracked: bool,
     #[structopt(
+        long = "ignore-uncommited-repos",
+        help = "Do not include repos that have no commits",
+    )]
+    ignore_uncommitted_repos: bool,
+    #[structopt(
         long = "absolute-paths",
         help = "Display absolute paths for repos",
     )]
@@ -85,6 +90,7 @@ fn main() {
     let crawler = Crawler::new(&current_dir)
         .pending(cli.pending)
         .ignore_untracked(cli.ignore_untracked)
+        .ignore_uncommitted_repos(cli.ignore_uncommitted_repos)
         .access_remote(cli.access_remote)
         .absolute_paths(cli.absolute_paths)
         .untagged_heads(cli.untagged_heads);
