@@ -30,7 +30,7 @@ struct Opt {
     pending: bool,
     #[structopt(
         long = "ignore-untracked",
-        help = "Do not include untracked files in repos with pending action",
+        help = "Do not include untracked files in output",
     )]
     ignore_untracked: bool,
     #[structopt(
