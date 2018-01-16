@@ -20,7 +20,7 @@ It reports if those repos have:
 - unpulled tags (optional)
 - unpulled commits (optional)
 
-I also offers a command line tool with all those features,
+It also offers a command line tool with all those features,
 one of which is to show all repos:
 
     $ mrh
