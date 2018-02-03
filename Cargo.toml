@@ -19,7 +19,7 @@ structopt = "0.1"
 structopt-derive = "0.1"
 walkdir = "2"
 ansi_term = "0.10"
-ordermap = "0.3"
+ordermap = "0.4"
 serde_yaml = { version = "0.7", optional = true }
 serde_json =  { version = "1", optional = true }
 serde_derive =  { version = "1", optional = true }
