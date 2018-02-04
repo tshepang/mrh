@@ -46,6 +46,12 @@ Include repos whose HEAD commits are not tagged:
     foo (uncommitted changes, unpushed commits, untagged HEAD)
     bar (untagged HEAD)
 
+Check which repos have unfetched commits,
+a relatively slow operation when the remote is on the network:
+
+    $ mrh --access-remote ssh-key
+    qux (unfetched commits)
+
 For cases where JSON or YAML output is desired,
 use `--output-json` or `--output-yaml` flags, respectively.
 
