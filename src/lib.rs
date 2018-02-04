@@ -14,7 +14,7 @@
 //! - untagged HEAD (optional)
 //! - unpushed tags (optional)
 //! - unpulled tags (optional)
-//! - unpulled commits (optional)
+//! - unfetched commits (optional)
 //!
 //! This library is meant to inspect those states, given a root path as
 //! starting point.

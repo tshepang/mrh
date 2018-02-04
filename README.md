@@ -18,7 +18,7 @@ It reports if those repos have:
 - untagged HEAD (optional)
 - unpushed tags (optional)
 - unpulled tags (optional)
-- unpulled commits (optional)
+- unfetched commits (optional)
 
 It also offers a command line tool with all those features,
 one of which is to show all repos:
