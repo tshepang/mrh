@@ -177,7 +177,10 @@ impl<'a> Crawler<'a> {
                 }
             };
             let local_branch = Branch::wrap(local_ref);
-            let local_head_oid = local_branch.get().target().unwrap();
+            let local_head_oid = match local_branch.get().target() {
+                Some(oid) => oid,
+                None => return None,
+            };
             match repo.statuses(Some(&mut opts)) {
                 Ok(statuses) => {
                     for status in statuses.iter() {
@@ -205,7 +208,10 @@ impl<'a> Crawler<'a> {
                     }
                     if let Ok(upstream_branch) = local_branch.upstream() {
                         let upstream_ref = upstream_branch.into_reference();
-                        let upstream_head_oid = upstream_ref.target().unwrap();
+                        let upstream_head_oid = match upstream_ref.target() {
+                            Some(oid) => oid,
+                            None => return None,
+                        };
                         if local_head_oid != upstream_head_oid {
                             if let Ok((ahead, behind)) =
                                 repo.graph_ahead_behind(local_head_oid, upstream_head_oid)
@@ -305,8 +311,13 @@ impl<'a> Crawler<'a> {
         local_head_oid: git2::Oid,
     ) -> Result<Set<&'b str>, Error> {
         if let Ok(remote) = repo.find_remote("origin") {
-            let config = git2::Config::open_default().unwrap();
-            let url = remote.url().unwrap();
+            // XXX howto avoid the following panic
+            let config = git2::Config::open_default().expect("could not get git config");
+            let url = match remote.url() {
+                Some(url) => url,
+                // XXX should not ignore this one, though it seems not a likely one to occur
+                None => return Ok(pending),
+            };
             let mut callbacks = git2::RemoteCallbacks::new();
             if url.starts_with("http") {
                 callbacks.credentials(|_, _, _| git2::Cred::credential_helper(&config, url, None));
