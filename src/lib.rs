@@ -164,8 +164,7 @@ impl<'a> Crawler<'a> {
             let local_ref = match repo.head() {
                 Ok(head) => head,
                 Err(why) => {
-                    if self.ignore_uncommitted_repos
-                        && why.class() == git2::ErrorClass::Reference
+                    if self.ignore_uncommitted_repos && why.class() == git2::ErrorClass::Reference
                         && why.code() == git2::ErrorCode::UnbornBranch
                     {
                         return None;
