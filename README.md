@@ -58,7 +58,12 @@ use `--output-json` or `--output-yaml` flags, respectively.
 
 ## Installation
 
-Following is the most easy way to install the tool
+You will need to first install cmake before you can build mrh.
+Get it from your package registry, or from [its site](https://cmake.org).
+It's needed by libssh2-sys crate,
+which itself is ultimately needed by the git2 crate.
+
+Proceed to build and install mrh
 (assuming you have the [Rust toolchain installed][install]):
 
     cargo install mrh
