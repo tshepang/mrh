@@ -108,6 +108,8 @@ fn main() {
 }
 
 fn display_human(result: mrh::Output) {
+    #[cfg(windows)]
+    ansi_term::enable_ansi_support().unwrap();
     print!("{}", result.path.display());
     if let Some(pending) = result.pending {
         let pending: Vec<_> = pending.into_iter().collect();
