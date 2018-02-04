@@ -51,8 +51,11 @@ struct Opt {
     #[structopt(
         long = "access-remote",
         help = "Compare against remote repo, most likely over the network",
+        default_value = "ssh-key",
+        possible_value = "ssh-key",
+        possible_value = "ssh-agent",
     )]
-    access_remote: bool,
+    ssh_auth_method: String,
     #[structopt(
         long = "output-yaml",
         help = "Display output in YAML format",
@@ -91,7 +94,7 @@ fn main() {
         .pending(cli.pending)
         .ignore_untracked(cli.ignore_untracked)
         .ignore_uncommitted_repos(cli.ignore_uncommitted_repos)
-        .access_remote(cli.access_remote)
+        .access_remote(cli.ssh_auth_method)
         .absolute_paths(cli.absolute_paths)
         .untagged_heads(cli.untagged_heads);
     for output in crawler {

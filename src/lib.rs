@@ -57,7 +57,7 @@ pub struct Crawler<'a> {
     ignore_uncommitted_repos: bool,
     absolute_paths: bool,
     untagged_heads: bool,
-    access_remote: bool,
+    access_remote: String,
     root_path: &'a Path,
     iter: Box<Iterator<Item = Repository>>,
 }
@@ -71,7 +71,7 @@ impl<'a> Crawler<'a> {
             ignore_uncommitted_repos: false,
             absolute_paths: false,
             untagged_heads: false,
-            access_remote: false,
+            access_remote: "".into(),
             root_path: root,
             iter: Box::new(
                 WalkDir::new(root)
@@ -125,8 +125,23 @@ impl<'a> Crawler<'a> {
     /// This allows checking if the repo is in sync with its remote counterpart,
     /// so will be relatively slow if remote is behind a network
     /// (which is the most likely scenario).
-    pub fn access_remote(mut self, answer: bool) -> Self {
-        self.access_remote = answer;
+    ///
+    /// # HTTP protocol remotes
+    ///
+    /// Uses Git's credentials.helper to determine what authentication
+    /// method to use.
+    /// If not successful:
+    /// > error: an unknown git error occurred
+    ///
+    /// # Git protocol remotes
+    ///
+    /// If "ssh-key" is specified, the ssh key will be used for authentication.
+    /// If "ssh-agent" is specified, a correctly-set ssh-agent will be assumed.
+    /// This is useful for cases where passphrase is set on the ssh key,
+    /// else you will get a:
+    /// > error authenticating: no auth sock variable
+    pub fn access_remote(mut self, ssh_auth_method: String) -> Self {
+        self.access_remote = ssh_auth_method;
         self
     }
 
@@ -205,7 +220,7 @@ impl<'a> Crawler<'a> {
                             }
                         }
                     }
-                    if self.access_remote {
+                    if !self.access_remote.is_empty() {
                         pending = match self.remote_ops(repo, pending, local_head_oid) {
                             Ok(pending) => pending,
                             Err(why) => {
@@ -297,16 +312,21 @@ impl<'a> Crawler<'a> {
             if url.starts_with("http") {
                 callbacks.credentials(|_, _, _| git2::Cred::credential_helper(&config, url, None));
             } else if url.starts_with("git") {
-                for file_name in &["id_rsa", "id_dsa"] {
-                    if let Some(home_dir) = std::env::home_dir() {
-                        let private_key = home_dir.join(".ssh").join(file_name);
-                        if private_key.exists() {
-                            callbacks.credentials(move |_, _, _| {
-                                git2::Cred::ssh_key("git", None, &private_key, None)
-                            });
-                            break;
+                // github, bitbucket, and gitlab use "git" as ssh username
+                if self.access_remote == "ssh-key" {
+                    for file_name in &["id_rsa", "id_dsa"] {
+                        if let Some(home_dir) = std::env::home_dir() {
+                            let private_key = home_dir.join(".ssh").join(file_name);
+                            if private_key.exists() {
+                                callbacks.credentials(move |_, _, _| {
+                                    git2::Cred::ssh_key("git", None, &private_key, None)
+                                });
+                                break;
+                            }
                         }
                     }
+                } else if self.access_remote == "ssh-agent" {
+                    callbacks.credentials(|_, _, _| git2::Cred::ssh_key_from_agent("git"));
                 }
             }
             // avoid "cannot borrow immutable local variable `remote` as mutable"
