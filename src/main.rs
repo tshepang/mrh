@@ -51,11 +51,10 @@ struct Opt {
     #[structopt(
         long = "access-remote",
         help = "Compare against remote repo, most likely over the network",
-        default_value = "ssh-key",
         possible_value = "ssh-key",
         possible_value = "ssh-agent",
     )]
-    ssh_auth_method: String,
+    ssh_auth_method: Option<String>,
     #[structopt(
         long = "output-yaml",
         help = "Display output in YAML format",

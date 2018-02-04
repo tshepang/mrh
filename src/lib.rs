@@ -57,7 +57,7 @@ pub struct Crawler<'a> {
     ignore_uncommitted_repos: bool,
     absolute_paths: bool,
     untagged_heads: bool,
-    access_remote: String,
+    access_remote: Option<String>,
     root_path: &'a Path,
     iter: Box<Iterator<Item = Repository>>,
 }
@@ -71,7 +71,7 @@ impl<'a> Crawler<'a> {
             ignore_uncommitted_repos: false,
             absolute_paths: false,
             untagged_heads: false,
-            access_remote: "".into(),
+            access_remote: None,
             root_path: root,
             iter: Box::new(
                 WalkDir::new(root)
@@ -140,7 +140,7 @@ impl<'a> Crawler<'a> {
     /// This is useful for cases where passphrase is set on the ssh key,
     /// else you will get a:
     /// > error authenticating: no auth sock variable
-    pub fn access_remote(mut self, ssh_auth_method: String) -> Self {
+    pub fn access_remote(mut self, ssh_auth_method: Option<String>) -> Self {
         self.access_remote = ssh_auth_method;
         self
     }
@@ -219,7 +219,7 @@ impl<'a> Crawler<'a> {
                             }
                         }
                     }
-                    if !self.access_remote.is_empty() {
+                    if self.access_remote.is_some() {
                         pending = match self.remote_ops(repo, pending, local_head_oid) {
                             Ok(pending) => pending,
                             Err(why) => {
@@ -312,20 +312,22 @@ impl<'a> Crawler<'a> {
                 callbacks.credentials(|_, _, _| git2::Cred::credential_helper(&config, url, None));
             } else if url.starts_with("git") {
                 // github, bitbucket, and gitlab use "git" as ssh username
-                if self.access_remote == "ssh-key" {
-                    for file_name in &["id_rsa", "id_dsa"] {
-                        if let Some(home_dir) = std::env::home_dir() {
-                            let private_key = home_dir.join(".ssh").join(file_name);
-                            if private_key.exists() {
-                                callbacks.credentials(move |_, _, _| {
-                                    git2::Cred::ssh_key("git", None, &private_key, None)
-                                });
-                                break;
+                if let Some(ref method) = self.access_remote {
+                    if method == "ssh-key" {
+                        for file_name in &["id_rsa", "id_dsa"] {
+                            if let Some(home_dir) = std::env::home_dir() {
+                                let private_key = home_dir.join(".ssh").join(file_name);
+                                if private_key.exists() {
+                                    callbacks.credentials(move |_, _, _| {
+                                        git2::Cred::ssh_key("git", None, &private_key, None)
+                                    });
+                                    break;
+                                }
                             }
                         }
+                    } else if method == "ssh-agent" {
+                        callbacks.credentials(|_, _, _| git2::Cred::ssh_key_from_agent("git"));
                     }
-                } else if self.access_remote == "ssh-agent" {
-                    callbacks.credentials(|_, _, _| git2::Cred::ssh_key_from_agent("git"));
                 }
             }
             // avoid "cannot borrow immutable local variable `remote` as mutable"
