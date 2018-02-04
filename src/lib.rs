@@ -342,13 +342,23 @@ impl<'a> Crawler<'a> {
                         if !name.ends_with("^{}") {
                             remote_tags.insert((item.name().to_string(), item.oid()));
                         }
-                    } else if name == "HEAD" &&
-                    // XXX This can be better!
-                        item.oid() != local_head_oid
-                        && !pending.contains("unpushed commits")
-                        && !pending.contains("outdated branch")
-                    {
-                        pending.insert("unpulled commits");
+                    } else if name.starts_with("refs/heads") && item.oid() != local_head_oid {
+                        let mut found = false;
+                        if let Ok(branches) = repo.branches(None) {
+                            for branch in branches {
+                                if let Ok(branch) = branch {
+                                    if let Some(oid) = branch.0.get().target() {
+                                        if oid == item.oid() {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if !found {
+                            pending.insert("unfetched commits");
+                        }
                     }
                 }
                 let mut local_tags = Set::new();
