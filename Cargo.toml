@@ -18,7 +18,7 @@ git2 = "0.7"
 structopt = "0.2"
 walkdir = "2"
 ansi_term = "0.11"
-indexmap = "0.4"
+indexmap = "1"
 serde_yaml = { version = "0.7", optional = true }
 serde_json =  { version = "1", optional = true }
 serde_derive =  { version = "1", optional = true }
