@@ -22,12 +22,12 @@
 //! For a usage example, see `main.rs`, which is the command-line tool
 //! exercising the library.
 extern crate git2;
-extern crate ordermap;
+extern crate indexmap;
 extern crate walkdir;
 
 use std::path::{Path, PathBuf};
 
-use ordermap::set::OrderSet as Set;
+use indexmap::set::IndexSet as Set;
 use walkdir::WalkDir;
 use git2::{Branch, Delta, Error, Repository, StatusOptions};
 
