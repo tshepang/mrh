@@ -83,7 +83,7 @@ NOTE: minimum required rustc is v1.21, due to use of Iterator::for_each by struc
 For library usage, check them [API docs][docs].
 
 [install]: https://www.rust-lang.org/en-US/install.html
-[docs]: https://docs.rs/crate/mrh
+[docs]: https://docs.rs/mrh
 
 
 ## License
