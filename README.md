@@ -64,9 +64,12 @@ use `--output-json` or `--output-yaml` flags, respectively.
 
 ## Installation
 
-You will need to first install cmake before you can build mrh.
-Get it from your package registry, or from [its site](https://cmake.org).
-It's needed by libssh2-sys crate,
+You will need to first install a few packages before you can build mrh.
+On Debian/Ubuntu, here how you do:
+
+    apt install cmake libssl-dev pkg-config gcc
+
+These are needed by `libssh2-sys` crate,
 which itself is ultimately needed by the git2 crate.
 
 Proceed to build and install mrh
