@@ -81,7 +81,12 @@ JSON and YAML output formats are behind feature flags:
 
     cargo install mrh --features "yaml json"
 
-NOTE: minimum required rustc is v1.21, due to use of Iterator::for_each by structopt.
+NOTE: minimum required rustc is v1.26.0,
+due to use of `std::fs::{read_to_string,write}` by newer versions of these crates:
+
+- libssh2-sys
+- libz-sys
+- libgit2-sys
 
 For library usage, check them [API docs][docs].
 

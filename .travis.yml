@@ -4,7 +4,7 @@ os:
   - osx
   - windows
 rust:
-  - 1.21.0
+  - 1.26.0
   - stable
   - beta
   - nightly
