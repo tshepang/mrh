@@ -2,6 +2,7 @@ language: rust
 os:
   - linux
   - osx
+  - windows
 rust:
   - 1.21.0
   - stable
