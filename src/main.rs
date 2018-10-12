@@ -12,8 +12,9 @@ extern crate serde_derive;
 
 use std::process;
 
-use structopt::StructOpt;
 use ansi_term::Color;
+use structopt::StructOpt;
+
 use mrh::Crawler;
 
 const CYAN: Color = Color::Fixed(6);
