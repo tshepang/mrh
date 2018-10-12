@@ -24,6 +24,7 @@
 extern crate git2;
 extern crate indexmap;
 extern crate walkdir;
+extern crate dirs;
 
 use std::path::{Path, PathBuf};
 
@@ -326,7 +327,7 @@ impl<'a> Crawler<'a> {
                 if let Some(ref method) = self.access_remote {
                     if method == "ssh-key" {
                         for file_name in &["id_rsa", "id_dsa"] {
-                            if let Some(home_dir) = std::env::home_dir() {
+                            if let Some(home_dir) = dirs::home_dir() {
                                 let private_key = home_dir.join(".ssh").join(file_name);
                                 if private_key.exists() {
                                     callbacks.credentials(move |_, _, _| {
