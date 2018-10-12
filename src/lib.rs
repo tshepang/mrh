@@ -39,9 +39,8 @@ use git2::{Branch, Delta, Error, Repository, StatusOptions};
 /// - There are no pending states, so only `path` (to the repo) has a
 ///   value
 /// - There are no pending states, and there is some error preventing the
-///   repo to be inspected properly... the `path` and `error` variant will
-///   have values
-/// - There are pending states... `path` and `pending` will have values
+///   repo from being inspected properly... `error` will have `Some` value
+/// - There are pending states... `pending` will have `Some` value
 pub struct Output {
     /// Repository path
     pub path: PathBuf,
