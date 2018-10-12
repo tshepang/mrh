@@ -140,9 +140,9 @@ fn make_serde_digestible(result: mrh::Output) -> Output {
         None => None,
     };
     Output {
-        path: path,
-        pending: pending,
-        error: error,
+        path,
+        pending,
+        error,
     }
 }
 
