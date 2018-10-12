@@ -25,13 +25,11 @@
 //! # extern crate mrh;
 //! # use std::path::Path;
 //! # fn main() {
-//! let crawler = mrh::Crawler::new(Path::new("."))
+//! mrh::Crawler::new(".")
 //!     .pending(true)
 //!     .ignore_untracked(true)
-//!     .ignore_uncommitted_repos(true);
-//! for output in crawler {
-//!     println!("{:?}", output);
-//! }
+//!     .ignore_uncommitted_repos(true)
+//!     .for_each(|output| println!("{:?}", output));
 //! # }
 //! ```
 extern crate dirs;
@@ -65,20 +63,20 @@ pub struct Output {
 }
 
 /// Crawls the filesystem, looking for Git repos
-pub struct Crawler<'a> {
+pub struct Crawler {
     pending: bool,
     ignore_untracked: bool,
     ignore_uncommitted_repos: bool,
     absolute_paths: bool,
     untagged_heads: bool,
     access_remote: Option<String>,
-    root_path: &'a Path,
+    root_path: PathBuf,
     iter: Box<Iterator<Item = Repository>>,
 }
 
-impl<'a> Crawler<'a> {
+impl Crawler {
     /// `root` is where crawling for Git repos begin
-    pub fn new(root: &'a Path) -> Self {
+    pub fn new<P: AsRef<Path>>(root: P) -> Self {
         Crawler {
             pending: false,
             ignore_untracked: false,
@@ -86,7 +84,7 @@ impl<'a> Crawler<'a> {
             absolute_paths: false,
             untagged_heads: false,
             access_remote: None,
-            root_path: root,
+            root_path: root.as_ref().into(),
             iter: Box::new(
                 WalkDir::new(root)
                     .into_iter()
@@ -412,7 +410,7 @@ impl<'a> Crawler<'a> {
     }
 
     fn make_relative(&self, target_dir: &Path) -> PathBuf {
-        if let Ok(path) = target_dir.strip_prefix(self.root_path) {
+        if let Ok(path) = target_dir.strip_prefix(&self.root_path) {
             if path.to_string_lossy().is_empty() {
                 ".".into()
             } else {
@@ -424,7 +422,7 @@ impl<'a> Crawler<'a> {
     }
 }
 
-impl<'a> Iterator for Crawler<'a> {
+impl Iterator for Crawler {
     type Item = Output;
     fn next(&mut self) -> Option<Self::Item> {
         loop {
