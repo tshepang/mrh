@@ -19,8 +19,21 @@
 //! This library is meant to inspect those states, given a root path as
 //! starting point.
 //!
-//! For a usage example, see `main.rs`, which is the command-line tool
-//! exercising the library.
+//! Example:
+//!
+//! ```
+//! # extern crate mrh;
+//! # use std::path::Path;
+//! # fn main() {
+//! let crawler = mrh::Crawler::new(Path::new("."))
+//!     .pending(true)
+//!     .ignore_untracked(true)
+//!     .ignore_uncommitted_repos(true);
+//! for output in crawler {
+//!     println!("{:?}", output);
+//! }
+//! # }
+//! ```
 extern crate git2;
 extern crate indexmap;
 extern crate walkdir;
@@ -41,6 +54,7 @@ use git2::{Branch, Delta, Error, Repository, StatusOptions};
 /// - There are no pending states, and there is some error preventing the
 ///   repo from being inspected properly... `error` will have `Some` value
 /// - There are pending states... `pending` will have `Some` value
+#[derive(Debug)]
 pub struct Output {
     /// Repository path
     pub path: PathBuf,
