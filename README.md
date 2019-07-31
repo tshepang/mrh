@@ -81,15 +81,13 @@ JSON and YAML output formats are behind feature flags:
 
     cargo install mrh --features "yaml json"
 
-NOTE: minimum required rustc is v1.26.0,
-due to use of `std::fs::{read_to_string,write}` by newer versions of these crates:
-
-- libssh2-sys
-- libz-sys
-- libgit2-sys
+NOTE: minimum required rustc is v1.33.0,
+due to use of `let` bindings in const fns by [percent-encoding],
+a transitive dependency of git2.
 
 For library usage, check them [API docs][docs].
 
+[percent-encoding]: https://crates.io/crates/percent-encoding
 [install]: https://www.rust-lang.org/en-US/install.html
 [docs]: https://docs.rs/mrh
 

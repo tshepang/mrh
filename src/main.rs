@@ -1,6 +1,5 @@
 extern crate ansi_term;
 extern crate mrh;
-#[macro_use]
 extern crate structopt;
 #[cfg(feature = "json")]
 extern crate serde_json;

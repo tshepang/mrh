@@ -71,7 +71,7 @@ pub struct Crawler {
     untagged_heads: bool,
     access_remote: Option<String>,
     root_path: PathBuf,
-    iter: Box<Iterator<Item = Repository>>,
+    iter: Box<dyn Iterator<Item = Repository>>,
 }
 
 impl Crawler {
