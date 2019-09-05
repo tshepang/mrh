@@ -272,7 +272,11 @@ impl Crawler {
         }
     }
 
-    fn diff_ops<'b>(&self, status: &git2::StatusEntry<'_>, mut pending: Set<&'b str>) -> Set<&'b str> {
+    fn diff_ops<'b>(
+        &self,
+        status: &git2::StatusEntry<'_>,
+        mut pending: Set<&'b str>,
+    ) -> Set<&'b str> {
         if let Some(diff_delta) = status.index_to_workdir() {
             match diff_delta.status() {
                 Delta::Untracked => {
