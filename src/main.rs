@@ -1,10 +1,3 @@
-extern crate ansi_term;
-extern crate mrh;
-extern crate structopt;
-#[cfg(feature = "json")]
-extern crate serde_json;
-#[cfg(feature = "yaml")]
-extern crate serde_yaml;
 #[cfg(any(feature = "yaml", feature = "json"))]
 #[macro_use]
 extern crate serde_derive;

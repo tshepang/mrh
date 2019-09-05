@@ -1,5 +1,3 @@
-extern crate mrh;
-
 fn main() {
     mrh::Crawler::new(".")
         .pending(true)

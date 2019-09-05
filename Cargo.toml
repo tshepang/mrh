@@ -8,6 +8,7 @@ readme = "README.md"
 categories = ["command-line-utilities"]
 keywords = ["git"]
 authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
+edition = "2018"
 
 [features]
 yaml = [ "serde_yaml", "serde_derive", "serde" ]

@@ -22,7 +22,6 @@
 //! Example:
 //!
 //! ```
-//! # extern crate mrh;
 //! # use std::path::Path;
 //! # fn main() {
 //! mrh::Crawler::new(".")
@@ -32,10 +31,6 @@
 //!     .for_each(|output| println!("{:?}", output));
 //! # }
 //! ```
-extern crate dirs;
-extern crate git2;
-extern crate indexmap;
-extern crate walkdir;
 
 use std::path::{Path, PathBuf};
 
@@ -277,7 +272,7 @@ impl Crawler {
         }
     }
 
-    fn diff_ops<'b>(&self, status: &git2::StatusEntry, mut pending: Set<&'b str>) -> Set<&'b str> {
+    fn diff_ops<'b>(&self, status: &git2::StatusEntry<'_>, mut pending: Set<&'b str>) -> Set<&'b str> {
         if let Some(diff_delta) = status.index_to_workdir() {
             match diff_delta.status() {
                 Delta::Untracked => {
