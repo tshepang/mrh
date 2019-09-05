@@ -14,8 +14,8 @@ yaml = [ "serde_yaml", "serde_derive", "serde" ]
 json = [ "serde_json", "serde_derive", "serde" ]
 
 [dependencies]
-git2 = "0.9"
-structopt = "0.2"
+git2 = "0.10"
+structopt = "0.3"
 walkdir = "2"
 ansi_term = "0.12"
 indexmap = "1"
