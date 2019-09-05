@@ -23,48 +23,29 @@ const BRIGHT_RED: Color = Color::Fixed(9);
 #[derive(StructOpt)]
 #[structopt(about)]
 struct Opt {
-    #[structopt(
-        long,
-        help = "Only show repos with pending action",
-    )]
+    /// Only show repos with pending action
+    #[structopt(long)]
     pending: bool,
-    #[structopt(
-        long,
-        help = "Do not include untracked files in output",
-    )]
+    /// Do not include untracked files in output
+    #[structopt(long)]
     ignore_untracked: bool,
-    #[structopt(
-        long,
-        help = "Do not include repos that have no commits",
-    )]
+    /// Do not include repos that have no commits
+    #[structopt(long)]
     ignore_uncommitted_repos: bool,
-    #[structopt(
-        long,
-        help = "Display absolute paths for repos",
-    )]
+    /// Display absolute paths for repos
+    #[structopt(long)]
     absolute_paths: bool,
-    #[structopt(
-        long,
-        help = "Check if HEAD is untagged",
-    )]
+    /// Check if HEAD is untagged
+    #[structopt(long)]
     untagged_heads: bool,
-    #[structopt(
-        long,
-        help = "Compare against remote repo, most likely over the network",
-        possible_value = "ssh-key",
-        possible_value = "ssh-agent",
-    )]
+    /// Compare against remote repo, most likely over the network
+    #[structopt(long, possible_value = "ssh-key", possible_value = "ssh-agent")]
     ssh_auth_method: Option<String>,
-    #[structopt(
-        long,
-        help = "Display output in YAML format",
-        conflicts_with = "output_json",
-    )]
+    /// Display output in YAML format
+    #[structopt(long, conflicts_with = "output_json")]
     output_yaml: bool,
-    #[structopt(
-        long,
-        help = "Display output in JSON format",
-    )]
+    /// Display output in JSON format
+    #[structopt(long)]
     output_json: bool,
 }
 
