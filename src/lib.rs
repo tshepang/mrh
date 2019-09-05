@@ -183,7 +183,7 @@ impl Crawler {
                         return None;
                     }
                     return Some(Output {
-                        path: path,
+                        path,
                         pending: None,
                         error: Some(why),
                     });
@@ -243,7 +243,7 @@ impl Crawler {
                             Ok(pending) => pending,
                             Err(why) => {
                                 return Some(Output {
-                                    path: path,
+                                    path,
                                     pending: None,
                                     error: Some(why),
                                 });
@@ -252,13 +252,13 @@ impl Crawler {
                     }
                     if !pending.is_empty() {
                         Some(Output {
-                            path: path,
+                            path,
                             pending: Some(pending),
                             error: None,
                         })
                     } else if !self.pending {
                         Some(Output {
-                            path: path,
+                            path,
                             pending: None,
                             error: None,
                         })
@@ -267,7 +267,7 @@ impl Crawler {
                     }
                 }
                 Err(why) => Some(Output {
-                    path: path,
+                    path,
                     pending: None,
                     error: Some(why),
                 }),
