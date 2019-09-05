@@ -21,47 +21,48 @@ const BRIGHT_BLACK: Color = Color::Fixed(8);
 const BRIGHT_RED: Color = Color::Fixed(9);
 
 #[derive(StructOpt)]
+#[structopt(about)]
 struct Opt {
     #[structopt(
-        long = "pending",
+        long,
         help = "Only show repos with pending action",
     )]
     pending: bool,
     #[structopt(
-        long = "ignore-untracked",
+        long,
         help = "Do not include untracked files in output",
     )]
     ignore_untracked: bool,
     #[structopt(
-        long = "ignore-uncommited-repos",
+        long,
         help = "Do not include repos that have no commits",
     )]
     ignore_uncommitted_repos: bool,
     #[structopt(
-        long = "absolute-paths",
+        long,
         help = "Display absolute paths for repos",
     )]
     absolute_paths: bool,
     #[structopt(
-        long = "untagged-heads",
+        long,
         help = "Check if HEAD is untagged",
     )]
     untagged_heads: bool,
     #[structopt(
-        long = "access-remote",
+        long,
         help = "Compare against remote repo, most likely over the network",
         possible_value = "ssh-key",
         possible_value = "ssh-agent",
     )]
     ssh_auth_method: Option<String>,
     #[structopt(
-        long = "output-yaml",
+        long,
         help = "Display output in YAML format",
         conflicts_with = "output_json",
     )]
     output_yaml: bool,
     #[structopt(
-        long = "output-json",
+        long,
         help = "Display output in JSON format",
     )]
     output_json: bool,
