@@ -2,7 +2,7 @@
 #[macro_use]
 extern crate serde_derive;
 
-use std::process;
+use std::{io::Write, process};
 
 use ansi_term::Color;
 use structopt::StructOpt;
@@ -84,19 +84,25 @@ fn main() {
 fn display_human(result: mrh::Output) {
     #[cfg(windows)]
     ansi_term::enable_ansi_support().unwrap();
-    print!("{}", result.path.display());
+    let mut output = format!("{}", result.path.display());
     if let Some(pending) = result.pending {
         let pending: Vec<_> = pending.into_iter().collect();
-        print!(" ({})", CYAN.paint(pending.join(", ")));
+        output.push_str(&format!(" ({})", CYAN.paint(pending.join(", "))));
     }
     if let Some(error) = result.error {
-        print!(
+        output.push_str(&format!(
             " ({}: {})",
             BRIGHT_RED.paint("error"),
             BRIGHT_BLACK.paint(error.to_string()),
-        );
+        ));
     }
-    println!();
+    if let Err(why) = writeln!(std::io::stdout(), "{}", output) {
+        if why.kind() == std::io::ErrorKind::BrokenPipe {
+            process::exit(1);
+        } else {
+            eprintln!("{}", why);
+        }
+    }
 }
 
 #[cfg(any(feature = "yaml", feature = "json"))]
