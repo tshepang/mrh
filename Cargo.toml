@@ -18,7 +18,7 @@ json = [ "serde_json", "serde_derive", "serde" ]
 git2 = "0.10"
 structopt = "0.3"
 walkdir = "2"
-ansi_term = "0.12"
+ansi_term = "0.11"
 indexmap = "1"
 serde_yaml = { version = "0.8", optional = true }
 serde_json =  { version = "1", optional = true }
