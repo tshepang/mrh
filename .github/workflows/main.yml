@@ -1,0 +1,25 @@
+on:
+  - push
+  - pull_request
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-16.04
+          - ubuntu-18.04
+          - windows-2016
+          - windows-2019
+          - macOS-10.14
+    steps:
+    - uses: actions/checkout@v1
+    - name: Default build
+      run: cargo build
+    - name: Build with "yaml" feature
+      run: cargo build --features yaml
+    - name: Build with "json" feature
+      run: cargo build --features json
+    - name: Build with both "json" and "yaml" feature
+      run: cargo build --all-features
