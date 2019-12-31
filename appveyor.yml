@@ -1,6 +1,6 @@
 environment:
   matrix:
-    - channel: 1.33.0
+    - channel: 1.36.0
       target: x86_64-pc-windows-msvc
     - channel: stable
       target: x86_64-pc-windows-msvc
