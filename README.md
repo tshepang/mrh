@@ -81,7 +81,7 @@ JSON and YAML output formats are behind feature flags:
 
     cargo install mrh --features "yaml json"
 
-NOTE: minimum required rustc is v1.33.0,
+NOTE: minimum required rustc is v1.36.0,
 due to use of `let` bindings in const fns by [percent-encoding],
 a transitive dependency of git2.
 
