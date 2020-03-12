@@ -1,6 +1,7 @@
 # mrh - Multi-(git)Repo Helper
 
-[![Build status](https://github.com/tshepang/mrh/workflows/CI/badge.svg)](https://github.com/tshepang/mrh/actions)
+[![crates.io](https://img.shields.io/crates/v/mrh.svg)](https://crates.io/crates/mrh)
+[![build status](https://github.com/tshepang/mrh/workflows/CI/badge.svg)](https://github.com/tshepang/mrh/actions)
 
 This repo provides a library that allows crawling a directory and its
 children for Git repos.
