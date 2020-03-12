@@ -4,7 +4,7 @@ on:
   - pull_request
 jobs:
   build:
-    name: ${{ matrix.os }} | ${{ matrix.rust }}
+    name: ${{ matrix.os }} (${{ matrix.rust }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
