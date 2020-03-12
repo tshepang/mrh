@@ -25,7 +25,3 @@ serde_json =  { version = "1", optional = true }
 serde_derive =  { version = "1", optional = true }
 serde =  { version = "1", optional = true }
 dirs = "2"
-
-[badges]
-travis-ci = { repository = "tshepang/mrh" }
-appveyor = { repository = "tshepang/mrh" }
