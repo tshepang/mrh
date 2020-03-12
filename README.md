@@ -1,7 +1,5 @@
 # mrh - Multi-(git)Repo Helper
 
-[![Linux build status](https://travis-ci.org/tshepang/mrh.svg?branch=master)](https://travis-ci.org/tshepang/mrh)
-[![Windows build status](https://ci.appveyor.com/api/projects/status/github/tshepang/mrh?svg=true)](https://ci.appveyor.com/project/tshepang/mrh)
 [![Build status](https://github.com/tshepang/mrh/workflows/CI/badge.svg)](https://github.com/tshepang/mrh/actions)
 
 This repo provides a library that allows crawling a directory and its
