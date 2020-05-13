@@ -49,3 +49,6 @@ jobs:
       with:
         command: build
         args: --all-features
+
+    - name: Security audit
+      uses: actions-rs/audit-check@v1.2.0
