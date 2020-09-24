@@ -1,6 +1,5 @@
 #[cfg(any(feature = "yaml", feature = "json"))]
-#[macro_use]
-extern crate serde_derive;
+use serde_derive::Serialize;
 
 use std::{io::Write, process};
 
