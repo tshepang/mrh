@@ -20,7 +20,7 @@ structopt = "0.3"
 walkdir = "2"
 ansi_term = "0.12"
 indexmap = "1"
-dirs = "2"
+dirs = "3"
 
 [dependencies.serde]
 version = "1"
