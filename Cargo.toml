@@ -11,8 +11,8 @@ authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
 edition = "2018"
 
 [features]
-yaml = [ "serde_yaml", "serde_derive", "serde" ]
-json = [ "serde_json", "serde_derive", "serde" ]
+yaml = [ "serde_yaml", "serde" ]
+json = [ "serde_json", "serde" ]
 
 [dependencies]
 git2 = "0.13"
@@ -25,10 +25,7 @@ dirs = "2"
 [dependencies.serde]
 version = "1"
 optional = true
-
-[dependencies.serde_derive]
-version = "1"
-optional = true
+features = ["derive"]
 
 [dependencies.serde_json]
 version = "1"

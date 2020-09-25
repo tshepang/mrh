@@ -1,5 +1,5 @@
 #[cfg(any(feature = "yaml", feature = "json"))]
-use serde_derive::Serialize;
+use serde::Serialize;
 
 use std::{io::Write, process};
 
