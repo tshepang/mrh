@@ -92,19 +92,17 @@ For library usage, check them [API docs][docs].
 [docs]: https://docs.rs/mrh
 
 
-## License
+#### License
 
-Licensed under either of
+<sup>
+Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE)
+or [MIT license](LICENSE-MIT) at your option.
+</sup>
 
- * Apache License, Version 2.0
-   ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license
-   ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+<br>
 
-at your option.
-
-## Contribution
-
+<sub>
 Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
-dual licensed as above, without any additional terms or conditions.
+for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
+be dual licensed as above, without any additional terms or conditions.
+</sub>
