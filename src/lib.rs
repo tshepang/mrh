@@ -34,6 +34,7 @@
 
 use std::path::{Path, PathBuf};
 
+use dirs_next as dirs;
 use git2::{Branch, Delta, Error, Repository, StatusOptions};
 use indexmap::set::IndexSet as Set;
 use walkdir::WalkDir;
