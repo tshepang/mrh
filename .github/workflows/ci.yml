@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - 1.37.0
+          - 1.45.0
           - stable
           - beta
           - nightly
