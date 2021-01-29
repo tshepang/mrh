@@ -14,7 +14,8 @@ jobs:
           - beta
           - nightly
         os:
-          - ubuntu-latest
+          - ubuntu-18.04
+          - ubuntu-20.04
           - windows-latest
           - macOS-latest
     steps:
