@@ -336,7 +336,14 @@ impl Crawler {
                 // github, bitbucket, and gitlab use "git" as ssh username
                 if let Some(ref method) = self.access_remote {
                     if method == "ssh-key" {
-                        for file_name in &["id_rsa", "id_dsa"] {
+                        for file_name in &[
+                            "id_dsa",
+                            "id_ecdsa",
+                            "id_ecdsa_sk",
+                            "id_ed25519",
+                            "id_ed25519_sk",
+                            "id_rsa",
+                        ] {
                             if let Some(home_dir) = dirs::home_dir() {
                                 let private_key = home_dir.join(".ssh").join(file_name);
                                 if private_key.exists() {
