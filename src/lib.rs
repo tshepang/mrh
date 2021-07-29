@@ -199,14 +199,12 @@ impl Crawler {
                         let local_ref = local_branch.get();
                         if let Ok(tags) = repo.tag_names(None) {
                             let mut untagged = true;
-                            for tag in tags.iter() {
-                                if let Some(tag) = tag {
-                                    let tag = format!("refs/tags/{}", tag);
-                                    if let Ok(reference) = repo.find_reference(&tag) {
-                                        if &reference == local_ref {
-                                            untagged = false;
-                                            break;
-                                        }
+                            for tag in tags.iter().flatten() {
+                                let tag = format!("refs/tags/{}", tag);
+                                if let Ok(reference) = repo.find_reference(&tag) {
+                                    if &reference == local_ref {
+                                        untagged = false;
+                                        break;
                                     }
                                 }
                             }
@@ -252,14 +250,14 @@ impl Crawler {
                             pending: Some(pending),
                             error: None,
                         })
-                    } else if !self.pending {
+                    } else if self.pending {
+                        None
+                    } else {
                         Some(Output {
                             path,
                             pending: None,
                             error: None,
                         })
-                    } else {
-                        None
                     }
                 }
                 Err(why) => Some(Output {
@@ -369,13 +367,11 @@ impl Crawler {
                     } else if name.starts_with("refs/heads") && item.oid() != local_head_oid {
                         let mut found = false;
                         if let Ok(branches) = repo.branches(None) {
-                            for branch in branches {
-                                if let Ok(branch) = branch {
-                                    if let Some(oid) = branch.0.get().target() {
-                                        if oid == item.oid() {
-                                            found = true;
-                                            break;
-                                        }
+                            for branch in branches.flatten() {
+                                if let Some(oid) = branch.0.get().target() {
+                                    if oid == item.oid() {
+                                        found = true;
+                                        break;
                                     }
                                 }
                             }
@@ -387,13 +383,11 @@ impl Crawler {
                 }
                 let mut local_tags = Set::new();
                 if let Ok(tags) = repo.tag_names(None) {
-                    for tag in tags.iter() {
-                        if let Some(tag) = tag {
-                            let tag = format!("refs/tags/{}", tag);
-                            if let Ok(reference) = repo.find_reference(&tag) {
-                                if let Some(oid) = reference.target() {
-                                    local_tags.insert((tag, oid));
-                                }
+                    for tag in tags.iter().flatten() {
+                        let tag = format!("refs/tags/{}", tag);
+                        if let Ok(reference) = repo.find_reference(&tag) {
+                            if let Some(oid) = reference.target() {
+                                local_tags.insert((tag, oid));
                             }
                         }
                     }

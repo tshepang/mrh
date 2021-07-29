@@ -114,10 +114,7 @@ fn make_serde_digestible(result: mrh::Output) -> Output {
         }
         None => None,
     };
-    let error = match result.error {
-        Some(error) => Some(error.to_string()),
-        None => None,
-    };
+    let error = result.error.map(|error| error.to_string());
     Output {
         path,
         pending,
