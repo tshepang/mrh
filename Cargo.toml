@@ -11,16 +11,16 @@ authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
 edition = "2018"
 
 [features]
-yaml = [ "serde_yaml", "serde" ]
-json = [ "serde_json", "serde" ]
+yaml = ["serde_yaml", "serde"]
+json = ["serde_json", "serde"]
 
 [dependencies]
+ansi_term = "0.12"
+dirs-next = "2"
 git2 = "0.13"
+indexmap = "1"
 structopt = "0.3"
 walkdir = "2"
-ansi_term = "0.12"
-indexmap = "1"
-dirs-next = "2"
 
 [dependencies.serde]
 version = "1"
