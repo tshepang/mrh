@@ -73,7 +73,7 @@ pub struct Crawler {
 impl Crawler {
     /// `root` is where crawling for Git repos begin
     pub fn new<P: AsRef<Path>>(root: P) -> Self {
-        Crawler {
+        Self {
             pending: false,
             ignore_untracked: false,
             ignore_uncommitted_repos: false,
@@ -93,13 +93,13 @@ impl Crawler {
     }
 
     /// Decide if you only want matches that are in pending state
-    pub fn pending(mut self, answer: bool) -> Self {
+    pub const fn pending(mut self, answer: bool) -> Self {
         self.pending = answer;
         self
     }
 
     /// Decide if you want to exclude matches that have untracked files
-    pub fn ignore_untracked(mut self, answer: bool) -> Self {
+    pub const fn ignore_untracked(mut self, answer: bool) -> Self {
         self.ignore_untracked = answer;
         self
     }
@@ -108,13 +108,13 @@ impl Crawler {
     ///
     /// This will happen when a `git init` is executed,
     /// and one forgets to commit.
-    pub fn ignore_uncommitted_repos(mut self, answer: bool) -> Self {
+    pub const fn ignore_uncommitted_repos(mut self, answer: bool) -> Self {
         self.ignore_uncommitted_repos = answer;
         self
     }
 
     /// Display absolute paths (instead of relative ones)
-    pub fn absolute_paths(mut self, answer: bool) -> Self {
+    pub const fn absolute_paths(mut self, answer: bool) -> Self {
         self.absolute_paths = answer;
         self
     }
@@ -123,7 +123,7 @@ impl Crawler {
     ///
     /// A use-case is where related repositories (e.g. those comprising
     /// a single system), need to be tagged before, say, a release
-    pub fn untagged_heads(mut self, answer: bool) -> Self {
+    pub const fn untagged_heads(mut self, answer: bool) -> Self {
         self.untagged_heads = answer;
         self
     }
