@@ -13,31 +13,31 @@ const BRIGHT_BLACK: Color = Color::Fixed(8);
 const BRIGHT_RED: Color = Color::Fixed(9);
 
 #[derive(Parser)]
-#[structopt(about)]
+#[clap(about, version)]
 struct Opt {
     /// Only show repos with pending action
-    #[structopt(long)]
+    #[clap(long)]
     pending: bool,
     /// Do not include untracked files in output
-    #[structopt(long)]
+    #[clap(long)]
     ignore_untracked: bool,
     /// Do not include repos that have no commits
-    #[structopt(long)]
+    #[clap(long)]
     ignore_uncommitted_repos: bool,
     /// Display absolute paths for repos
-    #[structopt(long)]
+    #[clap(long)]
     absolute_paths: bool,
     /// Check if HEAD is untagged
-    #[structopt(long)]
+    #[clap(long)]
     untagged_heads: bool,
     /// Compare against remote repo, most likely over the network
-    #[structopt(long, possible_value = "ssh-key", possible_value = "ssh-agent")]
+    #[clap(long, possible_value = "ssh-key", possible_value = "ssh-agent")]
     ssh_auth_method: Option<String>,
     /// Display output in YAML format
-    #[structopt(long, conflicts_with = "output_json")]
+    #[clap(long, conflicts_with = "output-json")]
     output_yaml: bool,
     /// Display output in JSON format
-    #[structopt(long)]
+    #[clap(long)]
     output_json: bool,
 }
 
@@ -50,7 +50,7 @@ struct Output {
 }
 
 fn main() {
-    let cli = Opt::from_args();
+    let cli = Opt::parse();
     let current_dir = match std::env::current_dir() {
         Ok(dir) => dir,
         Err(why) => {
