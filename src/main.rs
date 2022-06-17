@@ -31,7 +31,7 @@ struct Opt {
     #[clap(long)]
     untagged_heads: bool,
     /// Compare against remote repo, most likely over the network
-    #[clap(long, possible_value = "ssh-key", possible_value = "ssh-agent")]
+    #[clap(long, value_parser = ["ssh-key", "ssh-agent"])]
     ssh_auth_method: Option<String>,
     /// Display output in YAML format
     #[clap(long, conflicts_with = "output-json")]
