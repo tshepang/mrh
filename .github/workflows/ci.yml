@@ -13,6 +13,7 @@ jobs:
           - stable
           - beta
           - nightly
+        # https://github.com/actions/virtual-environments#available-environments
         os:
           - macOS-10.15
           - macOS-11
