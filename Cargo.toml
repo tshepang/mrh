@@ -16,7 +16,7 @@ json = ["serde_json", "serde"]
 [dependencies]
 ansi_term = "0.12"
 dirs-next = "2"
-git2 = "0.13"
+git2 = "0.14"
 indexmap = "1"
 structopt = "0.3"
 walkdir = "2"
