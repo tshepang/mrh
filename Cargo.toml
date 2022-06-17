@@ -6,7 +6,7 @@ repository = "https://github.com/tshepang/mrh"
 license = "MIT OR Apache-2.0"
 categories = ["command-line-utilities"]
 keywords = ["git"]
-authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
+authors = ["Tshepang Mbambo <tshepang@gmail.com>"]
 edition = "2021"
 rust-version = "1.56.1"
 
