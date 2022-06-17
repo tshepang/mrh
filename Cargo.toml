@@ -8,6 +8,7 @@ categories = ["command-line-utilities"]
 keywords = ["git"]
 authors = ["Tshepang Lekhonkhobe <tshepang@gmail.com>"]
 edition = "2018"
+rust-version = "1.56.0"
 
 [features]
 yaml = ["serde_yaml", "serde"]
