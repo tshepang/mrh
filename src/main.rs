@@ -1,9 +1,10 @@
 #[cfg(any(feature = "yaml", feature = "json"))]
 use serde::Serialize;
 
-use std::{io::Write, process};
+use std::{fmt::Write as _, io::Write, process};
 
 use ansi_term::Color;
+use anyhow::Result;
 use clap::Parser;
 
 use mrh::Crawler;
@@ -49,7 +50,7 @@ struct Output {
     pub error: Option<String>,
 }
 
-fn main() {
+fn main() -> Result<()> {
     let cli = Opt::parse();
     let current_dir = match std::env::current_dir() {
         Ok(dir) => dir,
@@ -57,7 +58,7 @@ fn main() {
             eprintln!(
                 "{}: Could not read current directory: {}",
                 BRIGHT_RED.paint("error"),
-                why.to_string(),
+                why,
             );
             process::exit(1)
         }
@@ -75,25 +76,27 @@ fn main() {
         } else if cli.output_yaml {
             display_yaml(output);
         } else {
-            display_human(output);
+            display_human(output)?;
         }
     }
+    Ok(())
 }
 
-fn display_human(result: mrh::Output) {
+fn display_human(result: mrh::Output) -> Result<()> {
     #[cfg(windows)]
     ansi_term::enable_ansi_support().unwrap();
     let mut output = format!("{}", result.path.display());
     if let Some(pending) = result.pending {
         let pending: Vec<_> = pending.into_iter().collect();
-        output.push_str(&format!(" ({})", CYAN.paint(pending.join(", "))));
+        write!(output, " ({})", CYAN.paint(pending.join(", ")))?;
     }
     if let Some(error) = result.error {
-        output.push_str(&format!(
+        write!(
+            output,
             " ({}: {})",
             BRIGHT_RED.paint("error"),
             BRIGHT_BLACK.paint(error.to_string()),
-        ));
+        )?;
     }
     if let Err(why) = writeln!(std::io::stdout(), "{}", output) {
         if why.kind() == std::io::ErrorKind::BrokenPipe {
@@ -102,6 +105,7 @@ fn display_human(result: mrh::Output) {
             eprintln!("{}", why);
         }
     }
+    Ok(())
 }
 
 #[cfg(any(feature = "yaml", feature = "json"))]
