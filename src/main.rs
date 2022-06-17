@@ -4,7 +4,7 @@ use serde::Serialize;
 use std::{io::Write, process};
 
 use ansi_term::Color;
-use structopt::StructOpt;
+use clap::Parser;
 
 use mrh::Crawler;
 
@@ -12,7 +12,7 @@ const CYAN: Color = Color::Fixed(6);
 const BRIGHT_BLACK: Color = Color::Fixed(8);
 const BRIGHT_RED: Color = Color::Fixed(9);
 
-#[derive(StructOpt)]
+#[derive(Parser)]
 #[structopt(about)]
 struct Opt {
     /// Only show repos with pending action
