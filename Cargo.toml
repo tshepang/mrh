@@ -20,11 +20,14 @@ anyhow = "1"
 dirs-next = "2"
 git2 = "0.14"
 indexmap = "1"
-walkdir = "2"
 
 [dependencies.clap]
 version = "3"
 features = ["derive"]
+
+[dependencies.ignore]
+version = "0.4"
+default-features = false
 
 [dependencies.serde]
 version = "1"

@@ -36,8 +36,8 @@ use std::path::{Path, PathBuf};
 
 use dirs_next as dirs;
 use git2::{Branch, Delta, Error, Repository, StatusOptions};
+use ignore::Walk;
 use indexmap::set::IndexSet as Set;
-use walkdir::WalkDir;
 
 /// Represents Crawler output
 ///
@@ -82,11 +82,10 @@ impl Crawler {
             access_remote: None,
             root_path: root.as_ref().into(),
             iter: Box::new(
-                WalkDir::new(root)
-                    .into_iter()
+                Walk::new(root)
                     .filter_map(|entry| entry.ok()) // ignore stuff we can't read
-                    .filter(|entry| entry.file_type().is_dir()) // ignore non-dirs
-                    .filter(|entry| entry.file_name() != ".git") // avoid double-hits
+                    .filter(|entry| entry.file_type().is_some())
+                    .filter(|entry| entry.file_type().unwrap().is_dir())
                     .filter_map(|entry| Repository::open(entry.path()).ok()),
             ),
         }
