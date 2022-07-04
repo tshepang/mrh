@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - 1.56.1
+          - 1.60.0
           - stable
           - beta
           - nightly
@@ -50,6 +50,12 @@ jobs:
       with:
         command: build
         args: --all-features
+
+    - name: Build (with no features)
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --no-default-features
 
   security-audit:
     runs-on: ubuntu-20.04

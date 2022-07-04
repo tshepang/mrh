@@ -31,6 +31,12 @@
 //!     .for_each(|output| println!("{:?}", output));
 //! # }
 //! ```
+//!
+//! ## Feature flags
+//!
+//! - __`cli`__: enabled by default, this allows building the CLI
+//! - __`json`__: useful only when __`cli`__ feature is provided,
+//! this provides output in JSON format, to ease consumption by tools.
 
 use std::path::{Path, PathBuf};
 

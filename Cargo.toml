@@ -8,20 +8,33 @@ categories = ["command-line-utilities"]
 keywords = ["git"]
 authors = ["Tshepang Mbambo <tshepang@gmail.com>"]
 edition = "2021"
-rust-version = "1.56.1"
+rust-version = "1.60"
+
+[[bin]]
+name = "mrh"
+required-features = ["cli"]
 
 [features]
-json = ["serde_json", "serde"]
+default = ["cli"]
+cli = ["dep:clap", "dep:ansi_term", "dep:anyhow", "json"]
+json = ["dep:serde_json", "dep:serde"]
 
 [dependencies]
-ansi_term = "0.12"
-anyhow = "1"
 dirs-next = "2"
 git2 = "0.14"
 indexmap = "1"
 
+[dependencies.ansi_term]
+version = "0.12"
+optional = true
+
+[dependencies.anyhow]
+version = "1"
+optional = true
+
 [dependencies.clap]
 version = "3"
+optional = true
 features = ["derive"]
 
 [dependencies.ignore]

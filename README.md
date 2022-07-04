@@ -52,8 +52,7 @@ a relatively slow operation when the remote is on the network:
     $ mrh --access-remote ssh-key
     qux (unfetched commits)
 
-For cases where JSON or YAML output is desired,
-use `--output-json` or `--output-yaml` flags, respectively.
+For cases where JSON output is desired, use `--output-json` flag.
 
 
 ## Notes
@@ -77,11 +76,13 @@ Proceed to build and install mrh
 
     cargo install mrh
 
-JSON and YAML output formats are behind feature flags:
+JSON output format is behind a feature flag:
 
-    cargo install mrh --features "yaml json"
+    cargo install mrh --features json
 
-NOTE: minimum required rustc is v1.56.1, [due to indexmap].
+NOTE: minimum required rustc is v1.60,
+due to using `dep:` syntax in Cargo.toml,
+to avoid implicit features names.
 
 For library usage, check them [API docs][docs].
 
