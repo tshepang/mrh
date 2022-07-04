@@ -1,4 +1,4 @@
-#[cfg(any(feature = "yaml", feature = "json"))]
+#[cfg(feature = "json")]
 use serde::Serialize;
 
 use std::{fmt::Write as _, io::Write, process};
@@ -34,15 +34,12 @@ struct Opt {
     /// Compare against remote repo, most likely over the network
     #[clap(long, value_parser = ["ssh-key", "ssh-agent"])]
     ssh_auth_method: Option<String>,
-    /// Display output in YAML format
-    #[clap(long, conflicts_with = "output-json")]
-    output_yaml: bool,
     /// Display output in JSON format
     #[clap(long)]
     output_json: bool,
 }
 
-#[cfg(any(feature = "yaml", feature = "json"))]
+#[cfg(feature = "json")]
 #[derive(Serialize)]
 struct Output {
     pub path: String,
@@ -73,8 +70,6 @@ fn main() -> Result<()> {
     for output in crawler {
         if cli.output_json {
             display_json(output);
-        } else if cli.output_yaml {
-            display_yaml(output);
         } else {
             display_human(output)?;
         }
@@ -108,7 +103,7 @@ fn display_human(result: mrh::Output) -> Result<()> {
     Ok(())
 }
 
-#[cfg(any(feature = "yaml", feature = "json"))]
+#[cfg(feature = "json")]
 fn make_serde_digestible(result: mrh::Output) -> Output {
     let path = result.path.to_string_lossy().to_string();
     let pending = match result.pending {
@@ -138,20 +133,5 @@ fn display_json(output: mrh::Output) {
 #[cfg(not(feature = "json"))]
 fn display_json(_: mrh::Output) {
     eprintln!("Support for JSON output format not compiled in");
-    process::exit(1);
-}
-
-#[cfg(feature = "yaml")]
-fn display_yaml(output: mrh::Output) {
-    let output = make_serde_digestible(output);
-    if let Err(why) = serde_yaml::to_writer(std::io::stdout(), &output) {
-        eprintln!("{}", why);
-        process::exit(1);
-    }
-    println!();
-}
-#[cfg(not(feature = "yaml"))]
-fn display_yaml(_: mrh::Output) {
-    eprintln!("Support for YAML output format not compiled in");
     process::exit(1);
 }

@@ -39,12 +39,6 @@ jobs:
       with:
         command: build
 
-    - name: Build (with "yaml" feature)
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --features yaml
-
     - name: Build (with "json" feature)
       uses: actions-rs/cargo@v1
       with:
