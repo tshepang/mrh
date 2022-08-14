@@ -89,7 +89,6 @@ For library usage, check them [API docs][docs].
 [percent-encoding]: https://crates.io/crates/percent-encoding
 [install]: https://www.rust-lang.org/en-US/install.html
 [docs]: https://docs.rs/mrh
-[due to indexmap]: https://github.com/bluss/indexmap/commit/8a571c6d68cb38c283d563ff6972613e0eea4111
 
 
 #### License
