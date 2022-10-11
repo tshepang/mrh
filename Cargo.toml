@@ -21,7 +21,7 @@ json = ["dep:serde_json", "dep:serde"]
 
 [dependencies]
 dirs-next = "2"
-git2 = "0.14"
+git2 = "0.15"
 indexmap = "1"
 
 [dependencies.ansi_term]
