@@ -86,7 +86,6 @@ to avoid implicit features names.
 
 For library usage, check them [API docs][docs].
 
-[percent-encoding]: https://crates.io/crates/percent-encoding
 [install]: https://www.rust-lang.org/en-US/install.html
 [docs]: https://docs.rs/mrh
 
