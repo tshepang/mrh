@@ -15,7 +15,7 @@ const BRIGHT_RED: Color = Color::Fixed(9);
 
 #[derive(Parser)]
 #[command(about, version)]
-struct Opt {
+struct Cli {
     /// Only show repos with pending action
     #[arg(long)]
     pending: bool,
@@ -48,7 +48,7 @@ struct Output {
 }
 
 fn main() -> Result<()> {
-    let cli = Opt::parse();
+    let cli = Cli::parse();
     let current_dir = match std::env::current_dir() {
         Ok(dir) => dir,
         Err(why) => {
