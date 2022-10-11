@@ -1,7 +1,7 @@
 #[cfg(feature = "json")]
 use serde::Serialize;
 
-use std::{fmt::Write as _, io::Write, process};
+use std::{fmt::Write as _, io::Write, path::PathBuf, process};
 
 use ansi_term::Color;
 use anyhow::Result;
@@ -37,6 +37,9 @@ struct Cli {
     /// Display output in JSON format
     #[arg(long)]
     output_json: bool,
+    /// Choose a path where to start the crawl
+    #[arg(default_value = ".")]
+    root_path: PathBuf,
 }
 
 #[cfg(feature = "json")]
@@ -49,18 +52,7 @@ struct Output {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    let current_dir = match std::env::current_dir() {
-        Ok(dir) => dir,
-        Err(why) => {
-            eprintln!(
-                "{}: Could not read current directory: {}",
-                BRIGHT_RED.paint("error"),
-                why,
-            );
-            process::exit(1)
-        }
-    };
-    let crawler = Crawler::new(&current_dir)
+    let crawler = Crawler::new(&cli.root_path)
         .pending(cli.pending)
         .ignore_untracked(cli.ignore_untracked)
         .ignore_uncommitted_repos(cli.ignore_uncommitted_repos)
