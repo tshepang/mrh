@@ -4,7 +4,7 @@ use serde::Serialize;
 use std::{fmt::Write as _, io::Write, path::PathBuf, process};
 
 use ansi_term::Color;
-use anyhow::Result;
+use anyhow::{ensure, Result};
 use clap::Parser;
 
 use mrh::Crawler;
@@ -52,6 +52,10 @@ struct Output {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+    ensure!(
+        cli.root_path.metadata()?.is_dir(),
+        "root path should be a directory",
+    );
     let crawler = Crawler::new(&cli.root_path)
         .pending(cli.pending)
         .ignore_untracked(cli.ignore_untracked)
