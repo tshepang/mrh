@@ -11,8 +11,6 @@ jobs:
         rust:
           - 1.60.0
           - stable
-          - beta
-          - nightly
         # https://github.com/actions/virtual-environments#available-environments
         os:
           - macOS-10.15
