@@ -14,28 +14,28 @@ const BRIGHT_BLACK: Color = Color::Fixed(8);
 const BRIGHT_RED: Color = Color::Fixed(9);
 
 #[derive(Parser)]
-#[clap(about, version)]
+#[command(about, version)]
 struct Opt {
     /// Only show repos with pending action
-    #[clap(long)]
+    #[arg(long)]
     pending: bool,
     /// Do not include untracked files in output
-    #[clap(long)]
+    #[arg(long)]
     ignore_untracked: bool,
     /// Do not include repos that have no commits
-    #[clap(long)]
+    #[arg(long)]
     ignore_uncommitted_repos: bool,
     /// Display absolute paths for repos
-    #[clap(long)]
+    #[arg(long)]
     absolute_paths: bool,
     /// Check if HEAD is untagged
-    #[clap(long)]
+    #[arg(long)]
     untagged_heads: bool,
     /// Compare against remote repo, most likely over the network
-    #[clap(long, value_parser = ["ssh-key", "ssh-agent"])]
+    #[arg(long, value_parser = ["ssh-key", "ssh-agent"])]
     ssh_auth_method: Option<String>,
     /// Display output in JSON format
-    #[clap(long)]
+    #[arg(long)]
     output_json: bool,
 }
 

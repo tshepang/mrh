@@ -33,7 +33,7 @@ version = "1"
 optional = true
 
 [dependencies.clap]
-version = "3"
+version = "4"
 optional = true
 features = ["derive"]
 
