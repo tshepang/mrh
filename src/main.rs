@@ -1,10 +1,15 @@
 #[cfg(feature = "json")]
 use serde::Serialize;
 
-use std::{fmt::Write as _, io::Write, path::PathBuf, process};
+use std::{
+    fmt::Write as _,
+    io::Write,
+    path::{Path, PathBuf},
+    process,
+};
 
 use ansi_term::Color;
-use anyhow::{ensure, Result};
+use anyhow::{bail, ensure, Result};
 use clap::Parser;
 
 use mrh::Crawler;
@@ -76,7 +81,25 @@ fn main() -> Result<()> {
 fn display_human(result: mrh::Output) -> Result<()> {
     #[cfg(windows)]
     ansi_term::enable_ansi_support().unwrap();
-    let mut output = format!("{}", result.path.display());
+    let current_dir = match std::env::current_dir() {
+        Ok(dir) => dir,
+        Err(why) => {
+            bail!(
+                "{}: Could not read current directory: {}",
+                BRIGHT_RED.paint("error"),
+                why,
+            );
+        }
+    };
+    let mut output = if let Ok(path) = result.path.strip_prefix(current_dir) {
+        if path == Path::new("") {
+            ".".into()
+        } else {
+            String::from(path.to_string_lossy())
+        }
+    } else {
+        String::from(result.path.to_string_lossy())
+    };
     if let Some(pending) = result.pending {
         let pending: Vec<_> = pending.into_iter().collect();
         write!(output, " ({})", CYAN.paint(pending.join(", ")))?;
