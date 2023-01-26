@@ -205,7 +205,7 @@ impl Crawler {
                         if let Ok(tags) = repo.tag_names(None) {
                             let mut untagged = true;
                             for tag in tags.iter().flatten() {
-                                let tag = format!("refs/tags/{}", tag);
+                                let tag = format!("refs/tags/{tag}");
                                 if let Ok(reference) = repo.find_reference(&tag) {
                                     if &reference == local_ref {
                                         untagged = false;
@@ -396,7 +396,7 @@ impl Crawler {
                 let mut local_tags = Set::new();
                 if let Ok(tags) = repo.tag_names(None) {
                     for tag in tags.iter().flatten() {
-                        let tag = format!("refs/tags/{}", tag);
+                        let tag = format!("refs/tags/{tag}");
                         if let Ok(reference) = repo.find_reference(&tag) {
                             if let Some(oid) = reference.target() {
                                 local_tags.insert((tag, oid));

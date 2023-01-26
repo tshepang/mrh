@@ -89,11 +89,11 @@ fn display_human(result: mrh::Output) -> Result<()> {
             BRIGHT_BLACK.paint(error.to_string()),
         )?;
     }
-    if let Err(why) = writeln!(std::io::stdout(), "{}", output) {
+    if let Err(why) = writeln!(std::io::stdout(), "{output}") {
         if why.kind() == std::io::ErrorKind::BrokenPipe {
             process::exit(1);
         } else {
-            eprintln!("{}", why);
+            eprintln!("{why}");
         }
     }
     Ok(())
@@ -121,7 +121,7 @@ fn make_serde_digestible(result: mrh::Output) -> Output {
 fn display_json(output: mrh::Output) {
     let output = make_serde_digestible(output);
     if let Err(why) = serde_json::to_writer(std::io::stdout(), &output) {
-        eprintln!("{}", why);
+        eprintln!("{why}");
         process::exit(1);
     }
     println!();
