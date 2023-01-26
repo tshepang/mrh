@@ -42,7 +42,6 @@ use std::path::{Path, PathBuf};
 
 use dirs_next as dirs;
 use git2::{Branch, Delta, Error, Repository, StatusOptions};
-use ignore::Walk;
 use indexmap::set::IndexSet as Set;
 
 /// Represents Crawler output
@@ -88,7 +87,9 @@ impl Crawler {
             access_remote: None,
             root_path: root.as_ref().into(),
             iter: Box::new(
-                Walk::new(root)
+                ignore::WalkBuilder::new(root)
+                    .sort_by_file_path(|a, b| a.cmp(b))
+                    .build()
                     .filter_map(|entry| entry.ok()) // ignore stuff we can't read
                     .filter(|entry| entry.file_type().is_some())
                     .filter(|entry| entry.file_type().unwrap().is_dir())
