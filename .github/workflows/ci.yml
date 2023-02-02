@@ -13,10 +13,8 @@ jobs:
           - stable
         # https://github.com/actions/virtual-environments#available-environments
         os:
-          - macOS-10.15
           - macOS-11
           - macOS-12
-          - ubuntu-18.04
           - ubuntu-20.04
           - ubuntu-22.04
           - windows-2019
