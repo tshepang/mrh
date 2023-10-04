@@ -17,7 +17,7 @@ required-features = ["cli"]
 [features]
 default = ["cli"]
 cli = ["dep:clap", "dep:ansi_term", "dep:anyhow"]
-json = ["dep:serde_json", "dep:serde"]
+json = ["dep:serde_json", "dep:serde", "cli"]
 
 [dependencies]
 dirs-next = "2"
