@@ -68,8 +68,8 @@ On Debian/Ubuntu, here how you do:
 
     apt install cmake libssl-dev pkg-config gcc
 
-These are needed by `libssh2-sys` crate,
-which itself is ultimately needed by the git2 crate.
+These are needed by the __libssh2-sys__ crate,
+which itself is ultimately needed by the __git2__ crate.
 
 Proceed to build and install mrh
 (assuming you have the [Rust toolchain installed][install]):
