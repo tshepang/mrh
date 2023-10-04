@@ -22,7 +22,7 @@ json = ["dep:serde_json", "dep:serde"]
 [dependencies]
 dirs-next = "2"
 git2 = "0.18"
-indexmap = "1"
+indexmap = "2"
 
 [dependencies.ansi_term]
 version = "0.12"
