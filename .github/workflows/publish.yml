@@ -6,37 +6,14 @@
 #
 # - go to Actions > Publish
 # - click the Run Workflow dropdown in the top-right
-# - enter the tag of the release as “Release Tag” (e.g. v0.3.18)
 name: Publish
-
-on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release Tag'
-        required: true
-        type: string
-
+on: workflow_dispatch
 jobs:
-  # This is a bit convoluted so that the other parts of this workflow remain
-  # the same even if the way the tag is defined is more complicated
-  download-tag:
-    runs-on: ubuntu-latest
-    outputs:
-        tag: ${{ steps.print-tag.outputs.tag }}
-    steps:
-      - id: print-tag
-        run: echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
-
-  # publish the current repo state to crates.io
   cargo-publish:
     runs-on: ubuntu-latest
-    needs: download-tag
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
-        with:
-          ref: ${{needs.download-tag.outputs.tag}}
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@master
         with:
