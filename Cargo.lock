@@ -392,7 +392,7 @@ checksum = "523dc4f511e55ab87b694dc30d0f820d60906ef06413f93d4d7a1385599cc149"
 
 [[package]]
 name = "mrh"
-version = "0.13.1"
+version = "0.13.2"
 dependencies = [
  "ansi_term",
  "anyhow",
