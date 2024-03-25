@@ -11,11 +11,11 @@ jobs:
         rust:
           - 1.70.0
           - stable
-        # https://github.com/actions/virtual-environments#available-environments
+        # https://github.com/actions/virtual-environments#available-images
         os:
-          - macOS-11
           - macOS-12
           - macOS-13
+          - macOS-13-arm64
           - ubuntu-20.04
           - ubuntu-22.04
           - windows-2019
