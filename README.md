@@ -80,13 +80,13 @@ JSON output format is behind a feature flag:
 
     cargo install mrh --features json
 
-NOTE: minimum required rustc is v1.70, [due to clap].
+NOTE: minimum required rustc is v1.74, [due to clap].
 
 For library usage, check them [API docs][docs].
 
 [install]: https://www.rust-lang.org/en-US/install.html
 [docs]: https://docs.rs/mrh
-[due to clap]: https://github.com/clap-rs/clap/pull/5086
+[due to clap]: https://github.com/clap-rs/clap/pull/5343
 
 
 #### License
