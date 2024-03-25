@@ -10,6 +10,12 @@ authors = ["Tshepang Mbambo <tshepang@gmail.com>"]
 edition = "2021"
 rust-version = "1.64"
 
+[package.metadata.wix]
+upgrade-guid = "0CB02B19-611F-469E-A98E-9833B5BB2CAD"
+path-guid = "AB30AE5A-2E28-4CC7-8FF8-125DF4FDA0F2"
+license = false
+eula = false
+
 [[bin]]
 name = "mrh"
 required-features = ["cli"]
@@ -64,7 +70,7 @@ ci = ["github"]
 # The installers to generate for each app
 installers = ["shell", "powershell"]
 # Target platforms to build apps for (Rust target-triple syntax)
-targets = ["x86_64-apple-darwin", "x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl", "x86_64-pc-windows-msvc"]
 # Publish jobs to run in CI
 pr-run-mode = "plan"
 # Features to pass to cargo build
