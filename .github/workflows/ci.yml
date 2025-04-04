@@ -14,7 +14,6 @@ jobs:
         # https://github.com/actions/virtual-environments#available-images
         os:
           - macOS-13 # x86
-          - macOS-13-xlarge # arm
           - macOS-14 # arm
           - macOS-14-large # x86
           - ubuntu-20.04
