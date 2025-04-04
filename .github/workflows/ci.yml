@@ -38,6 +38,21 @@ jobs:
     - name: Build (with "json" feature)
       run: cargo build --features json
 
+  # https://doc.rust-lang.org/nightly/cargo/guide/continuous-integration.html#verifying-latest-dependencies
+  latest_deps:
+    name: Latest Dependencies
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: allow
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup update stable && rustup default stable
+      - run: cargo update --verbose
+      - run: cargo build --verbose
+      - run: cargo build --verbose --features json
+      - run: cargo build --verbose --no-default-features
+
   security-audit:
     runs-on: ubuntu-latest
     steps:
