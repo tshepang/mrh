@@ -89,6 +89,14 @@ For library usage, check them [API docs][docs].
 [due to clap]: https://github.com/clap-rs/clap/pull/5343
 
 
+## Radicle
+
+To clone this repository on [Radicle]:
+
+    rad clone rad:z37EycTqZeuGMYpUSCM3v2e2qe16s
+
+[Radicle]: https://radicle.xyz
+
 #### License
 
 <sup>
