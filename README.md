@@ -1,101 +1,11 @@
 # mrh - Multi-(git)Repo Helper
 
-[![crates.io](https://img.shields.io/crates/v/mrh.svg)](https://crates.io/crates/mrh)
-[![build status](https://github.com/tshepang/mrh/workflows/CI/badge.svg)](https://github.com/tshepang/mrh/actions)
+> NOTE:
+> This is now developed [on Radicle].
+> See [the website] for more info on what that is.
 
-This repo provides a library that allows crawling a directory and its
-children for Git repos.
-It reports if those repos have:
-
-- uncommitted changes
-- unpushed commits
-- outdated branch
-- added files
-- deleted files
-- renamed files
-- untracked files (can be disabled)
-- uncommitted repos (can be disabled)
-- untagged HEAD (optional)
-- unpushed tags (optional)
-- unpulled tags (optional)
-- unfetched commits (optional)
-
-It also offers a command line tool with all those features,
-one of which is to show all repos:
-
-    $ mrh
-    foo (uncommitted changes, untracked files, unpushed commits)
-    bar
-    baz (untracked files)
-    qux
-
-Only show those repos that have a pending action:
-
-    $ mrh --pending
-    foo (uncommitted changes, untracked files, unpushed commits)
-    baz (untracked files)
-
-Ignore untracked files in results:
-
-    $ mrh --pending --ignore-untracked
-    foo (uncommitted changes, unpushed commits)
-
-Include repos whose HEAD commits are not tagged:
-
-    $ mrh --pending --ignore-untracked --untagged-head
-    foo (uncommitted changes, unpushed commits, untagged HEAD)
-    bar (untagged HEAD)
-
-Check which repos have unfetched commits,
-a relatively slow operation when the remote is on the network:
-
-    $ mrh --access-remote ssh-key
-    qux (unfetched commits)
-
-For cases where JSON output is desired, use `--output-json` flag.
-
-
-## Notes
-
-- Ignores unreadable files/directories without warning
-- Ignores bare git repositories
-
-
-## Installation
-
-You will need to first install a few packages before you can build mrh.
-On Debian/Ubuntu, here how you do:
-
-    apt install cmake libssl-dev pkg-config gcc
-
-These are needed by the __libssh2-sys__ crate,
-which itself is ultimately needed by the __git2__ crate.
-
-Proceed to build and install mrh
-(assuming you have the [Rust toolchain installed][install]):
-
-    cargo install mrh
-
-JSON output format is behind a feature flag:
-
-    cargo install mrh --features json
-
-NOTE: minimum required rustc is v1.74, [due to clap].
-
-For library usage, check them [API docs][docs].
-
-[install]: https://www.rust-lang.org/en-US/install.html
-[docs]: https://docs.rs/mrh
-[due to clap]: https://github.com/clap-rs/clap/pull/5343
-
-
-## Radicle
-
-To clone this repository on [Radicle]:
-
-    rad clone rad:z37EycTqZeuGMYpUSCM3v2e2qe16s
-
-[Radicle]: https://radicle.xyz
+[on Radicle]: https://app.radicle.at/nodes/seed.radicle.at/rad:z37EycTqZeuGMYpUSCM3v2e2qe16s
+[the website]: https://radicle.xyz
 
 #### License
 
