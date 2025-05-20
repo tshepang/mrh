@@ -29,7 +29,7 @@ one of which is to show all repos:
     baz (untracked files)
     qux
 
-Only show those repos that are pending action:
+Only show those repos that have a pending action:
 
     $ mrh --pending
     foo (uncommitted changes, untracked files, unpushed commits)
